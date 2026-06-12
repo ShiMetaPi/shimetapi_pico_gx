@@ -1,0 +1,4 @@
+
+SRCS-y += cv4003.c
+SRCS-y += cv4003_ctrl.c
+

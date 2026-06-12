@@ -1,0 +1,134 @@
+
+menu "Lotus SoCs Configuration"
+
+if ARCH_LOTUS
+
+source "lotus/machine/Kconfig"
+
+config TINY_BOOT
+	bool "Enable Tiny boot support"
+	default n
+	help
+	  Support for lotus tiny boot solution.
+
+config QS_MCU
+	bool "Support AE MCU firmware"
+	default n
+	help
+	  Support filling AE MCU firmware to boot and loading it
+
+config LOTUS_EDA
+	bool "Enable EDA support"
+	default n
+	help
+	  Support for EDA simulation.
+
+config LOTUS_FPGA
+	bool "Enable FPGA support"
+	default n
+	help
+	  Support for FPGA debug.
+
+config LOTUS_GZIP_BOOT
+	bool "Use GZIP compressed boot"
+	default y
+	help
+	  Use GZIP compressed boot.
+
+config LOTUS_DISABLE_CONSOLE
+	bool "Disable console"
+	default n
+	help
+	  This will disable the console, it may be useful in the final product
+          for security or quick starting resons.
+
+config AUXCODE_LOG_CTRL
+	int "Auxcode log control"
+	default 1
+	help
+	  0 - no log
+	  1 - use bootrom info level otp
+	  2 - show all log
+
+config LOTUS_DISABLE_DOWNLOAD
+	bool "Disable downloading from PC tools"
+	default n
+	help
+	  This will disable downloading function from the PC side, it may be useful
+          in the final product for security or low-cost flash resons.
+
+config AUXCODE_SVB_CTRL
+	hex "Auxcode SVB control"
+	default 0
+	help
+	  0 - Enable SVB
+	  0xC35A3CA5 - Disable SVB
+
+config HWDEC
+	bool "Enable Hardward Decompressing Support"
+	default y if TARGET_XMFALCON
+	default y if TARGET_XMORCA
+	depends on TARGET_XMFALCON || TARGET_XMORCA
+	help
+	  Support hardware decompressing.
+
+config GCAI_BAD_DDR
+	bool "Enable GCAI Bad DDR Support"
+	default n
+	depends on TARGET_XMFALCON
+	help
+	  Support GCAI Bad DDR
+
+config MMC_8BIT
+	bool "Enable MMC 8 Bit Mode"
+	default n
+	depends on TARGET_XMFALCON || TARGET_XMORCA
+	help
+	  Support MMC 8 Bit
+
+config DDR_PARAM_OFFSET
+	hex "DDR Param Partition Offset"
+	default 0xC0000
+	depends on TARGET_XMORCA
+	help
+	  DDR param partition offset
+
+config DDR_PARAM_SIZE
+	hex "DDR Param Partition Size"
+	default 0x80000
+	depends on TARGET_XMORCA
+	help
+	  DDR param partition size
+
+config SBL_SUPPORT
+	bool "Enable Second Boot Loader(SBL) Support"
+	default n
+	help
+	  Support Second Boot Loader(SBL)
+
+config SBL_LOAD_ADDR
+	hex "SBL Load Address"
+	default 0x40700000
+	depends on SBL_SUPPORT
+	help
+	  Second Boot Loader(SBL) Load Address in DDR
+
+config SBL_SIZE
+	hex "SBL Size"
+	default 0x40000
+	depends on SBL_SUPPORT
+	help
+	  Second Boot Loader(SBL) Image Size
+
+config SBL_OFFSET
+	hex "SBL Offset"
+	default 0x40000
+	depends on SBL_SUPPORT
+	help
+	  Second Boot Loader(SBL) Offset in Flash
+
+source "lotus/drivers/Kconfig"
+
+endif
+
+endmenu

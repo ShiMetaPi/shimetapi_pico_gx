@@ -1,0 +1,56 @@
+
+config FMC_SPI_NAND
+	bool "lotus SPI Nand Flash Interface support"
+	depends on FMC
+	help
+	  Enable the lotus SPI Nand flash support.
+
+	  If unsure, say N
+
+config SPI_NAND_MAX_CHIP_NUM
+    int "Support max number of SPI Nand flash chip (1, 2)"
+	depends on FMC_SPI_NAND
+    default 1
+    help
+      flash memory controller v100 device only support 1 or 2 SPI nand flash
+      chip, your should not config other value.
+
+config NAND_MAX_CHIP_NUM
+    int "Support max number of Nand flash chip (1, 2)"
+	depends on FMC_NAND
+    default 1
+    help
+      flash memory controller v100 device only support 1 or 2 nand flash
+      chip, your should not config other value.
+
+if FMC_SPI_NAND || FMC_NAND
+
+choice
+    prompt "Page Size and Ecc Type Select"
+    default FMC100_AUTO_PAGESIZE_ECC
+
+config FMC100_HARDWARE_PAGESIZE_ECC
+    bool "Hardware"
+    help
+      the configure of page size and ecc type lie on switch on the board.
+      so the page size and ecc type is controlled by Hardware see demo
+      board of SOC.
+
+config FMC100_AUTO_PAGESIZE_ECC
+    bool "Auto"
+    help
+      auto-sensed the page size and ecc type value. driver will try each of
+      page size and ecc type one by one till flash can be read and wrote
+      accurately. so the page size and ecc type is match adaptively without
+      switch on the board
+
+config FMC100_PAGESIZE_AUTO_ECC_NONE
+    bool "Pagesize Auto, Ecc None"
+    help
+      auto-sensed the page size and select ecc none. driver will try each
+      of page size one by one till flash can be read and wrote accurately.
+      so the page size is match adaptively without switch on the board
+
+endchoice
+
+endif

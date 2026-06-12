@@ -1,0 +1,6 @@
+
+SRCS-y += cv2005.c
+SRCS-y += cv2005_ctrl.c
+SRCS-y += cv2005_master.c
+SRCS-y += cv2005_slave.c
+

@@ -1,0 +1,2 @@
+SRCS-y += sc2337p.c
+SRCS-y += sc2337p_ctrl.c

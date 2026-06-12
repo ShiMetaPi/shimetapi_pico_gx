@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GK7206 Factory Test</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="page">
+    <header class="header">
+      <div>
+        <h1>GK7206 Factory Test</h1>
+        <p class="subtitle">开发板生产功能测试页面</p>
+      </div>
+      <div id="overallBadge" class="overall idle">未测试</div>
+    </header>
+
+    <section class="panel info">
+      <div class="board-info">
+        <div>板端地址：<strong id="boardAddress">-</strong></div>
+        <div>页面时间：<strong id="pageTime">-</strong></div>
+        <div>服务版本：<strong id="serverVersion">-</strong></div>
+      </div>
+    </section>
+
+    <section class="panel actions">
+      <button id="runAllBtn" class="primary">开始一键测试</button>
+      <button id="clearBtn" class="secondary">清空结果</button>
+      <button id="endTestBtn" class="danger">结束测试</button>
+    </section>
+
+    <section class="panel">
+      <table>
+        <thead>
+          <tr>
+            <th>测试项</th>
+            <th>状态</th>
+            <th>耗时</th>
+            <th>结果信息</th>
+            <th>单项操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr data-item="rtc">
+            <td>RTC 时钟</td>
+            <td><span class="status idle">未测试</span></td>
+            <td class="duration">-</td>
+            <td class="message">等待测试</td>
+            <td><button class="small" data-test="rtc">测试 RTC</button></td>
+          </tr>
+          <tr data-item="spi_flash">
+            <td>SPI Flash</td>
+            <td><span class="status idle">未测试</span></td>
+            <td class="duration">-</td>
+            <td class="message">等待测试</td>
+            <td><button class="small" data-test="spi_flash">测试 Flash</button></td>
+          </tr>
+          <tr data-item="sdcard">
+            <td>SD 卡读写</td>
+            <td><span class="status idle">未测试</span></td>
+            <td class="duration">-</td>
+            <td class="message">等待测试</td>
+            <td><button class="small" data-test="sdcard">测试 SD</button></td>
+          </tr>
+          <tr data-item="sensor">
+            <td>Sensor 出图</td>
+            <td><span class="status idle">未测试</span></td>
+            <td class="duration">-</td>
+            <td class="message">等待测试</td>
+            <td><button class="small" data-test="sensor">测试 Sensor</button></td>
+          </tr>
+          <tr data-item="mjpeg">
+            <td>MJPEG 图传</td>
+            <td><span class="status idle">未测试</span></td>
+            <td class="duration">-</td>
+            <td class="message">等待测试</td>
+            <td><button class="small" data-test="mjpeg">启动图传</button></td>
+          </tr>
+          <tr data-item="led">
+            <td>LED</td>
+            <td><span class="status idle">未测试</span></td>
+            <td class="duration">-</td>
+            <td class="message">等待测试</td>
+            <td><button class="small" data-test="led">测试 LED</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="panel preview-panel">
+      <div class="panel-head">
+        <div class="log-title">摄像头预览</div>
+        <div class="preview-actions">
+          <span class="preview-state">浏览器打开后自动显示实时流</span>
+        </div>
+      </div>
+      <div class="preview-box">
+        <img id="mjpegPreview" class="mjpeg-preview" alt="MJPEG 实时预览">
+        <div id="previewHint" class="preview-hint">页面加载后会自动连接 /mjpeg 实时流。</div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="log-title">测试日志</div>
+      <pre id="logBox">等待开始测试...</pre>
+    </section>
+  </div>
+
+  <div id="ledModal" class="modal-mask">
+    <div class="modal">
+      <div class="modal-title">LED 人工确认</div>
+      <div class="modal-message">请观察开发板 LED，是否正常闪烁？</div>
+      <div class="modal-actions">
+        <button id="ledYesBtn" class="yes-btn">是</button>
+        <button id="ledNoBtn" class="no-btn">否</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>

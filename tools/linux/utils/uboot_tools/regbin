@@ -1,0 +1,70 @@
+#!/bin/sh
+
+#set -x
+
+# ANSI COLORS
+NORMAL="[0;39m"
+RED="[1;31m"
+GREEN="[1;32m"
+YELLOW="[1;33m"
+BLUE="[1;34m"
+MAGENTA="[1;35m"
+CYAN="[1;36m"
+WHITE="[1;37m"
+
+if [ $# -ne 2 ]; then
+	echo "Invalid parameter"
+	echo "Usage: $(basename $0) <input: excel file> <output: reg file>"
+	echo ""
+	exit 1
+fi
+
+if [ ! -f $1 ]; then
+	echo "$RED$1 NOT EXIST!!$NORMAL"
+	exit 1
+fi
+
+mtime=$(/bin/ls -l --time-style=+%T-%D $1 | awk '{print $6}')
+
+mydir=$(dirname $0)
+
+timestamp=$(date +%H%M%S%N)
+
+head_file=head.$timestamp
+
+reg_tmp_file=$2.$timestamp.tmp
+
+cd $mydir
+
+#-----------------------------#
+#   Head of the Reg File      #
+#-----------------------------#
+#|Length |Value   | Notes     #
+#-----------------------------#
+#|4Bytes |BRHD    | Magic Num #
+#|-------|--------|-----------#
+#|4Bytes |        | Reserved  #
+#|-------|--------|-----------#
+#|4Bytes |v1.0    | Verson    #
+#|-------|--------|-----------#
+#|4Bytes |        | Reserved  #
+#|-------|--------|-----------#
+#|32Bytes|time    | Time stamp#
+#|-------|--------|-----------#
+#|16Bytes|        | Reserved  #
+#|-------|--------|-----------#
+#|64Bytes|reg name| Reg name  #
+#-----------------------------#
+dd if=/dev/zero of=$head_file bs=1 count=128
+echo -n "BRHD" >./$head_file
+echo -n "v1.0" | dd of=$head_file bs=1 seek=8 conv=notrunc
+echo -n "${mtime}" | dd of=$head_file bs=1 seek=16 conv=notrunc
+echo -n $(basename $1) | dd of=$head_file bs=1 seek=64 conv=notrunc
+dd if=/dev/zero of=$head_file bs=1 seek=127 count=1 conv=notrunc
+dd if=$head_file of=$head_file.128 bs=1 count=128
+chmod +x ./jre/bin/java
+./jre/bin/java -jar regbin.jar --generate $1 $reg_tmp_file
+cat $head_file.128 $reg_tmp_file >$2
+rm -f $head_file $head_file.128 $reg_tmp_file
+
+cd -

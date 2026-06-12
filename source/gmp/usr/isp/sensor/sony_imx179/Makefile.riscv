@@ -1,0 +1,4 @@
+
+SRCS-y += imx179.c
+SRCS-y += imx179_ctrl.c
+

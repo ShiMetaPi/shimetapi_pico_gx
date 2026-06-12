@@ -1,0 +1,4 @@
+
+SRCS-y += gc2053.c
+SRCS-y += gc2053_ctrl.c
+

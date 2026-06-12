@@ -1,0 +1,4 @@
+
+SRCS-y += imx307.c
+SRCS-y += imx307_ctrl.c
+

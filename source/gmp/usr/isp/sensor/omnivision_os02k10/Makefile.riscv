@@ -1,0 +1,4 @@
+
+SRCS-y += os02k10.c
+SRCS-y += os02k10_ctrl.c
+

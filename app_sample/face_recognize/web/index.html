@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GK7206 人脸检测</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎯 GK7206 人脸检测</h1>
+            <p class="subtitle">基于 MTCNN 三阶段实时人脸检测 + 关键点定位</p>
+        </header>
+
+        <div class="video-wrapper">
+            <div class="video-container" id="videoContainer">
+                <img id="mjpegStream" src="/mjpeg" alt="Camera Stream">
+                <canvas id="overlay"></canvas>
+            </div>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-item">
+                <span class="label">检测 FPS</span>
+                <span class="value" id="npuFps">--</span>
+            </div>
+            <div class="status-item">
+                <span class="label">人脸数量</span>
+                <span class="value" id="faceCount">0</span>
+            </div>
+            <div class="status-item">
+                <span class="label">状态</span>
+                <span class="value status-running" id="statusText">运行中</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

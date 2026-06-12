@@ -1,0 +1,12 @@
+
+menu "Device drivers"
+
+source "lotus/drivers/i2c/Kconfig"
+
+source "lotus/drivers/usb/Kconfig"
+
+source "lotus/drivers/net/Kconfig"
+
+source "lotus/drivers/mtd/Kconfig"
+
+endmenu

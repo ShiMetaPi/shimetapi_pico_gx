@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Partition_Info>
+	<Part Select="1" PartName="fastboot" StorageMedia="ddr" ImageFormat="raw" StartAddr="0" PartLen="512K" ImagePath="bootstrap.bin" />
+	<Part Select="1" PartName="boot" StorageMedia="spi-nor" ImageFormat="raw" StartAddr="0" PartLen="512K" ImagePath="uboot.bin" />
+	<Part Select="1" PartName="bootargs" StorageMedia="spi-nor" ImageFormat="raw" StartAddr="512K" PartLen="256K" ImagePath="bootargs.bin" />
+	<Part Select="1" PartName="ddr_param" StorageMedia="spi-nor" ImageFormat="raw" StartAddr="768K" PartLen="256K" ImagePath="" />
+	<Part Select="1" PartName="kernel" StorageMedia="spi-nor" ImageFormat="raw" StartAddr="1M" PartLen="6M" ImagePath="kernel" />
+	<Part Select="1" PartName="rootfs" StorageMedia="spi-nor" ImageFormat="jffs2" StartAddr="7M" PartLen="10M" ImagePath="rootfs.64k.jffs2" />
+</Partition_Info>

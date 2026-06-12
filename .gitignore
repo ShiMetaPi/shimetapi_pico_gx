@@ -1,0 +1,53 @@
+out/
+
+sample/**
+!sample/**/
+!sample/**/*.c
+!sample/**/*.h
+!sample/**/Makefile
+!sample/**/*.mk
+!sample/**/*.sh
+!sample/**/*.txt
+!sample/**/*.md
+!sample/**/*.conf
+!sample/**/*.ini
+!sample/**/*.cfg
+
+out/
+source/gmp/usr/dump_tools/vi_bayer_dump
+source/gmp/usr/dump_tools/vi_chn_dump
+source/gmp/usr/dump_tools/vo_chn_dump
+source/gmp/usr/dump_tools/vo_layer_dump
+source/gmp/usr/dump_tools/vpss_ichn_dump
+source/gmp/usr/dump_tools/vpss_ochn_dump
+source/kernel/linux-5.10.y/drivers/gmp
+
+# app_sample build artifacts
+app_sample/**/*.o
+app_sample/**/*.a
+app_sample/**/*.so
+app_sample/face_recognize/face_recognize
+app_sample/rpi_detector/rpi_detector
+
+# GMP driver object build directories
+source/gmp/drv/obj_linux-*/
+
+# SVP algorithm build artifacts
+source/gmp/usr/svp/src/alg/**/*.o
+
+# factory_test build artifacts
+source/app/factory_test/src/*.o
+
+# misc build artifacts & editor temp files
+*.o.bak
+*~
+*.swp
+*.swo
+.DS_Store
+
+# kconfig build artifacts
+tools/linux/kconfig/conf
+tools/linux/kconfig/mconf
+tools/linux/kconfig/zconf.hash.c
+tools/linux/kconfig/zconf.lex.c
+tools/linux/kconfig/zconf.tab.c

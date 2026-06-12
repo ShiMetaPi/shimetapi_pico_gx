@@ -1,0 +1,17 @@
+#
+# I2C subsystem configuration
+#
+
+menu "LOTUS I2C support"
+
+config LOTUS_I2C
+        bool "lotus i2c"
+        help
+          LOTUS I2C support.
+
+config CMD_LOTUS_I2C
+        bool "cmd lotus i2c"
+        help
+          CMD LOTUS I2C support.
+
+endmenu

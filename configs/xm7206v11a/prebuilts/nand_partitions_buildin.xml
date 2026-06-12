@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="GB2312" ?>
+<Partition_Info>
+<Part Sel="1" PartitionName="fastboot" FlashType="nand" FileSystem="none" Start="0" Length="512K" SelectFile="uboot.bin"/>
+<Part Sel="1" PartitionName="bootargs" FlashType="nand" FileSystem="none" Start="512K" Length="256K" SelectFile="bootargs.bin"/>
+<Part Sel="1" PartitionName="ddr_param" FlashType="nand" FileSystem="none" Start="768K" Length="256K" SelectFile=""/>
+<Part Sel="1" PartitionName="kernel" FlashType="nand" FileSystem="none" Start="1M" Length="5M" SelectFile="kernel"/>
+<Part Sel="1" PartitionName="rootfs" FlashType="nand" FileSystem="yaffs" Start="6M" Length="32M" SelectFile="rootfs_2k_4bit.yaffs2"/>
+</Partition_Info>

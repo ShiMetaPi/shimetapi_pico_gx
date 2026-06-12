@@ -1,0 +1,4 @@
+
+SRCS-y += sc450ai.c
+SRCS-y += sc450ai_ctrl.c
+

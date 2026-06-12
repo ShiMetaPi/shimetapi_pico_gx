@@ -1,0 +1,12 @@
+baudrate=115200
+ethaddr=00:00:00:00:00:00
+ipaddr=192.168.1.10
+netmask=255.255.255.0
+gatewayip=192.168.1.1
+serverip=192.168.1.1
+bootcmd=xmediaapp;sf probe 0;sf read 0x40FFFFC0 0x100000 0x400000;bootm 0x40FFFFC0
+bootargs=mem=32M console=ttyAMA0,115200 no_console_suspend root=/dev/mtdblock4 rootfstype=jffs2 rw mtdparts=sfc:512K(boot),256K(bootargs),256K(ddr_param),4M(kernel),11200K(rootfs),64K(factory_test) earlycon=pl011,mmio32,0x12040000
+bootdelay=2
+stdin=serial
+stdout=serial
+stderr=serial

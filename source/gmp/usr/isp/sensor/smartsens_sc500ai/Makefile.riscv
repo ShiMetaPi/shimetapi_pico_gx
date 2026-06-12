@@ -1,0 +1,4 @@
+
+SRCS-y += sc500ai.c
+SRCS-y += sc500ai_ctrl.c
+

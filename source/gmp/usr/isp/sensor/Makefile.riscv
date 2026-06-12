@@ -1,0 +1,3 @@
+
+SRCS-y += smartsens_sc485sl/
+#SRCS-y += smartsens_sc235hai/

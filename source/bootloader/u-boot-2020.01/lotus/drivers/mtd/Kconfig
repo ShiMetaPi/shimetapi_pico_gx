@@ -1,0 +1,21 @@
+menu "Flash Controller"
+
+config FMC
+	bool "Enable FMC - Flash Memory Controller"
+	depends on TARGET_XMFALCON || TARGET_XMORCA
+	help
+	  lotus Flash Memory Controller support SPI Nor SPI Nand often used on
+	  embedded chip. This option will provide the generic support for FMC drivers to register.
+
+source "lotus/drivers/mtd/nand/Kconfig"
+
+source "lotus/drivers/mtd/spi_nor/Kconfig"
+
+config SHOW_FLASH_SPEED
+	bool "Show Flash R/W Speed in flash commands"
+	default n
+	depends on FMC_SPI_NAND || FMC_SPI_NOR || FMC_NAND
+	help
+	  Support for testing flash speed.
+
+endmenu

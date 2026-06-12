@@ -1,0 +1,4 @@
+
+SRCS-y += cv8001.c
+SRCS-y += cv8001_ctrl.c
+

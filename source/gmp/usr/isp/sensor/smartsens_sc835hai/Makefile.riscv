@@ -1,0 +1,4 @@
+
+SRCS-y += sc835hai.c
+SRCS-y += sc835hai_ctrl.c
+

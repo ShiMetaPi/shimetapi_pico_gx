@@ -1,0 +1,12 @@
+baudrate=115200
+ethaddr=00:00:00:00:00:00
+ipaddr=192.168.1.10
+netmask=255.255.255.0
+gatewayip=192.168.1.1
+serverip=192.168.1.1
+bootcmd=xmediaapp;mmc read 0 0x40FFFFC0 0x800 0x2000;bootm 0x40FFFFC0
+bootargs=mem=32M console=ttyAMA0,115200 no_console_suspend root=/dev/mmcblk0p4 rootfstype=ext4 rw rootwait blkdevparts=mmcblk0:512K(boot),512K(bootargs),4M(kernel),32M(rootfs),-(others)
+bootdelay=0
+stdin=serial
+stdout=serial
+stderr=serial

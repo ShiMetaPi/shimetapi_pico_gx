@@ -1,0 +1,245 @@
+#!/bin/sh
+# Useage: ./loadxm [chip_type] [ -r|-i|-a|-h|-osmem]
+#         -r : rmmod all modules
+#         -i : insmod all modules
+#         -a : remove modules first, then insert modules
+#         -h : help information
+#     -osmem : display os memory size
+#    default : rmmod all moules and then insmod them
+# e.g: ./load chip -i
+
+####################Variables Definition##########################
+
+CHIP_TYPE=$1;                   # chip type
+
+#DDR start:0x40000000, kernel start:0x40000000,  OS(32M); MMZ start:0x42000000
+mem_total=64                    # 64M, total mem
+mem_start=0x40000000            # phy mem start
+os_mem_size=32                  # 32M, os mem
+mmz_start=0x42000000;           # mmz start addr
+mmz_size=32M;                   # 32M, mmz size
+##################################################################
+pre_mem_info()
+{
+    if [[ "$CHIP_TYPE" == "xm7206v11a" || "$CHIP_TYPE" == "xm7206v11at" || "$CHIP_TYPE" == "xm7206v11" ]];then
+        mem_total=128                # total mem
+        mem_start=0x40000000         # phy mem start
+        os_mem_size=32               # os mem
+        mmz_start=0x42000000;        # mmz start addr
+        mmz_size=96M;                # mmz size
+    elif [[ "$CHIP_TYPE" == "xm7206v12a" ]];then
+        mem_total=256                # total mem
+        mem_start=0x40000000         # phy mem start
+        os_mem_size=32               # os mem
+        mmz_start=0x42000000;        # mmz start addr
+        mmz_size=224M;               # mmz size
+    else
+        mem_total=64                 # total mem
+        mem_start=0x40000000         # phy mem start
+        os_mem_size=32               # os mem
+        mmz_start=0x42000000;        # mmz start addr
+        mmz_size=32M;                # mmz size
+    fi
+}
+
+check_mem_info()
+{
+    var=`cat /proc/cmdline`
+    temp=${var##*mem=}
+    bootargs_mem=${temp%%M*}
+
+    if [ $os_mem_size -lt $bootargs_mem ]; then
+        echo "bootargs_mem: $bootargs_mem, os_mem_size: $os_mem_size"
+        echo "the mem in bootargs conflicts with the osmem in the load script, please check these two parameters."
+        exit 0;
+    fi
+}
+
+report_error()
+{
+    echo "******* Error: There's something wrong, please check! *****"
+    exit 1
+}
+
+insert_audio()
+{
+    insmod xm_acomm.ko
+    insmod xm_aio.ko
+    insmod xm_ao.ko
+    insmod xm_ai.ko
+    insmod xm_aenc.ko
+    insmod xm_adec.ko
+}
+
+remove_audio()
+{
+    rmmod xm_adec
+    rmmod xm_aenc
+    rmmod xm_ai
+    rmmod xm_ao
+    rmmod xm_aio
+    rmmod xm_acomm
+}
+
+insert_ko()
+{
+    insmod xm_osal.ko mmz_allocator=xmedia mmz=anonymous,0,$mmz_start,$mmz_size || report_error
+    insmod xm_common.ko
+    insmod xm_pm.ko
+    insmod xm_vgs.ko
+    insmod xm_tde.ko
+    insmod xm_region.ko
+    insmod xm_isp.ko
+    insmod xm_vpss.ko
+    insmod xm_npu.ko
+    insmod xm_vi.ko
+    insmod xm_chnl.ko
+    insmod xm_vedu.ko
+    insmod xm_rc.ko
+    insmod xm_jpege.ko
+    insmod xm_h265e.ko
+    insmod xm_h264e.ko
+    insmod xm_venc.ko
+    insmod xm_vo.ko
+    insmod xm_fb.ko fb_vram="gfbg:vram0_size:3600"
+    insmod xm_cipher_drv.ko
+    insmod xm_ive.ko
+    insert_audio
+
+    ##  ive node数量为节省内存默认为64(取值范围8-512)，数量可配例如：insmod xm_ive.ko max_node_num=128
+}
+
+remove_ko()
+{
+    remove_audio
+    rmmod xm_cipher_drv
+    rmmod xm_ive
+    rmmod xm_fb
+    rmmod xm_vo
+    rmmod xm_venc
+    rmmod xm_h265e
+    rmmod xm_h264e
+    rmmod xm_jpege
+    rmmod xm_rc
+    rmmod xm_vedu
+    rmmod xm_chnl
+    rmmod xm_vi
+    rmmod xm_npu
+    rmmod xm_vpss
+    rmmod xm_isp
+    rmmod xm_region
+    rmmod xm_tde
+    rmmod xm_vgs
+    rmmod xm_pm
+    rmmod xm_common
+    rmmod xm_osal
+}
+
+load_usage()
+{
+    echo "Usage:  ./load [chip_type] [-option]"
+    echo "chip_type:"
+    echo "           xm7206v10 xm7206v10b xm7206v11a xm7206v12a xm7206v11 xm7206v11at"
+    echo "options:"
+    echo "    -i     insert modules"
+    echo "    -r     remove modules"
+    echo "    -a     remove modules first, then insert modules"
+    echo "    -h     help information"
+    echo -e "for example: ./load chip -i\n"
+}
+
+calc_mmz_info()
+{
+        mmz_start=`echo "$mem_start $os_mem_size"  |
+        awk 'BEGIN { temp = 0; }
+        {
+                temp = $1/1024/1024 + $2;
+        }
+        END { printf("0x%x00000\n", temp); }'`
+
+        mmz_size=`echo "$mem_total $os_mem_size"  |
+        awk 'BEGIN { temp = 0; }
+        {
+                temp = $1 - $2;
+        }
+        END { printf("%dM\n", temp); }'`
+        echo "mem_total: $mem_total, os_mem_size: $os_mem_size, mmz_start: $mmz_start, mmz_size: $mmz_size"
+}
+
+######################parse arg###################################
+b_arg_insmod=0
+b_arg_remove=0
+b_arg_os_mem=0
+
+pre_mem_info;
+
+for arg in $@
+do
+
+    if [ $b_arg_os_mem -eq 1 ] ; then
+        b_arg_os_mem=0;
+        os_mem_size=$arg;
+
+        if [ -z $os_mem_size ]; then
+            echo "[error] os_mem_size is null"
+            exit;
+        fi
+    fi
+
+    case $arg in
+        "-i")
+            b_arg_insmod=1;
+            ;;
+        "-r")
+            b_arg_remove=1;
+            ;;
+        "-a")
+            b_arg_insmod=1;
+            b_arg_remove=1;
+            ;;
+        "-h")
+            load_usage;
+            ;;
+        "-osmem")
+            b_arg_os_mem=1;
+            ;;
+    esac
+done
+#######################parse arg end########################
+
+if [ $# -lt 2 ]; then
+    load_usage;
+    exit;
+fi
+
+echo "CHIP_TYPE:$CHIP_TYPE"
+if [[ "$CHIP_TYPE" != "DUMMY" \
+       && "$CHIP_TYPE" != "xm7206v10" && "$CHIP_TYPE" != "xm7206v10b" && "$CHIP_TYPE" != "xm7206v11a" && "$CHIP_TYPE" != "xm7206v12a" \
+       && "$CHIP_TYPE" != "xm7206v11" && "$CHIP_TYPE" != "xm7206v11at" \
+   ]];then
+    echo "[err] chip[$CHIP_TYPE] not support"
+    load_usage;
+    exit;
+fi
+
+if [ $os_mem_size -ge $mem_total ] ; then
+    echo "[err] os_mem[$os_mem_size], over total_mem[$mem_total]"
+    exit;
+fi
+
+
+
+calc_mmz_info;
+
+#######################Action###############################
+
+check_mem_info;
+
+if [ $b_arg_remove -eq 1 ]; then
+    remove_ko;
+fi
+
+if [ $b_arg_insmod -eq 1 ]; then
+    insert_ko;
+fi
+

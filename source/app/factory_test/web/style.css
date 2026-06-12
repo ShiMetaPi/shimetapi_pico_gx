@@ -1,0 +1,297 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #f3f5f8;
+  color: #111827;
+  font-family: Arial, "Microsoft YaHei", sans-serif;
+}
+
+.page {
+  width: min(1180px, calc(100% - 32px));
+  margin: 24px auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 34px;
+}
+
+.subtitle {
+  margin: 8px 0 0;
+  color: #6b7280;
+}
+
+.panel {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 18px;
+  margin-bottom: 16px;
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.08);
+}
+
+.info {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.board-info {
+  line-height: 1.9;
+  color: #4b5563;
+  font-size: 16px;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+}
+
+button {
+  border: 0;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.primary {
+  height: 52px;
+  padding: 0 32px;
+  background: #2563eb;
+  color: #ffffff;
+  font-size: 20px;
+}
+
+.secondary {
+  height: 52px;
+  padding: 0 24px;
+  background: #e5e7eb;
+  color: #111827;
+  font-size: 18px;
+}
+
+.small {
+  height: 34px;
+  padding: 0 14px;
+  background: #eef2ff;
+  color: #3730a3;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 16px;
+}
+
+th,
+td {
+  padding: 14px 12px;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+}
+
+th {
+  background: #f8fafc;
+  color: #475569;
+}
+
+.status,
+.overall {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 86px;
+  height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+  font-weight: 800;
+}
+
+.overall {
+  min-width: 150px;
+  height: 64px;
+  font-size: 24px;
+}
+
+.idle {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.running {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.pass {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.fail {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.manual {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.skip {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.log-title {
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+
+.panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.preview-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.preview-box {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 12px;
+  background: #0f172a;
+  text-align: center;
+}
+
+.mjpeg-preview {
+  display: block;
+  width: 100%;
+  max-height: 520px;
+  object-fit: contain;
+  border-radius: 10px;
+  background: #000000;
+}
+
+.preview-hint {
+  margin-top: 10px;
+  color: #d1fae5;
+  font-size: 14px;
+}
+
+pre {
+  min-height: 150px;
+  max-height: 320px;
+  overflow: auto;
+  margin: 0;
+  padding: 14px;
+  background: #0f172a;
+  color: #d1fae5;
+  border-radius: 10px;
+  font-size: 14px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.modal-mask {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.modal {
+  width: min(560px, calc(100% - 32px));
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 30px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+}
+
+.modal-title {
+  font-size: 30px;
+  font-weight: 900;
+  color: #b45309;
+  margin-bottom: 14px;
+}
+
+.modal-message {
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1.5;
+  margin-bottom: 26px;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 18px;
+  justify-content: center;
+}
+
+.yes-btn,
+.no-btn {
+  min-width: 150px;
+  height: 58px;
+  font-size: 24px;
+}
+
+.yes-btn {
+  background: #16a34a;
+  color: #ffffff;
+}
+
+.no-btn {
+  background: #dc2626;
+  color: #ffffff;
+}
+
+@media (max-width: 800px) {
+  .header,
+  .info {
+    display: block;
+  }
+
+  .overall {
+    margin-top: 14px;
+  }
+
+  .board-info {
+    margin-top: 14px;
+  }
+
+  table {
+    font-size: 14px;
+  }
+
+  th,
+  td {
+    padding: 10px 8px;
+  }
+
+  .modal-message {
+    font-size: 20px;
+  }
+}

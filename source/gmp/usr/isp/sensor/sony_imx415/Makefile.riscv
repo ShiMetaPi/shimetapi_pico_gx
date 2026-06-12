@@ -1,0 +1,4 @@
+
+SRCS-y += imx415.c
+SRCS-y += imx415_ctrl.c
+

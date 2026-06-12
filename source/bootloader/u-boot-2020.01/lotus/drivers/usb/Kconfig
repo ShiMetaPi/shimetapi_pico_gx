@@ -1,0 +1,26 @@
+
+menuconfig LOTUS_USB
+	bool "LOTUS USB support"
+	default y
+	select CMD_USB
+	select USB
+	help
+	  LOTUS USB support.
+
+if LOTUS_USB
+config USB_PWREN_OFF_DELAY
+	int "usb port power off delay(ms)"
+	default 100
+	help
+	  Some usb device can't be recognize in U-boot because of error state, so
+	  we power off them and wait a delay to restart them, we call the delay
+	  as USB_PWREN_OFF_DELAY.
+
+config USB_DUAL_PORT_SUPPORT
+	bool "support dual-usb-port(U2 & U3) in host mode"
+	default n
+	help
+	  Some lotus chips support 2 usb host ports, contains U2 and U3. If your
+	  chip support 2 ports, enable this config could recognize U3 and U2 dev
+	  meanwhile, but cause to U3 couldn't be recognized sometimes.
+endif

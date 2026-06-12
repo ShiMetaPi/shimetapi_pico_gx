@@ -1,0 +1,4 @@
+
+SRCS-y += sc8238.c
+SRCS-y += sc8238_ctrl.c
+

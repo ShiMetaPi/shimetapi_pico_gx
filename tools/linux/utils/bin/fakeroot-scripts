@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+###############################################################################
+#
+#  Copyright (c) XMEDIA.
+#  All rights reserved.
+#  Create By Caizhiyong 2021/3/16
+#
+###############################################################################
+
+SELF=$(basename ${0})
+ROOTDIR=${1}
+CMD=${2}
+
+if [ ! -d "${ROOTDIR}" ]; then
+	echo "${SELF}: *** Directory \"${ROOTDIR}\" not exists"
+	exit 2
+fi
+
+cd "${ROOTDIR}"
+
+if [ ! -f init ]; then
+	ln -svf sbin/init init
+fi
+
+chmod 0755 init linuxrc
+chmod 0755 -R usr/bin usr/sbin usr/lib bin sbin lib
+chmod 0755 -R etc/init.d
+test -d etc/udev && chmod 0755 -R etc/udev/*.sh
+chown 0:0 -R ./*
+
+mknod dev/console c 5 1
+mknod dev/ttyAMA0 c 204 64
+mknod dev/ttyAMA1 c 204 65
+mknod dev/ttyS000 c 204 64
+
+echo ${CMD}
+eval ${CMD}

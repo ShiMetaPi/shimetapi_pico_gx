@@ -1,0 +1,17 @@
+mainmenu "xmedia SDK Configuration"
+
+menu "Base"
+source "version_config/config.base"
+endmenu
+
+menu "Board"
+source "version_config/config.board"
+endmenu
+
+menu "Bootloader System"
+source "version_config/config.bootloader"
+endmenu
+
+menu "Linux System"
+source "version_config/config.system"
+endmenu

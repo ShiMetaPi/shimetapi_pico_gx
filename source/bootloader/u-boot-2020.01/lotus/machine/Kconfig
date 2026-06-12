@@ -1,0 +1,32 @@
+choice
+	prompt "Target select"
+	default TARGET_XMFALCON
+
+config TARGET_XMFALCON
+	bool "Support xmfalcon"
+	select CPU_V7A
+	select DM
+	select CPU_V7A_HAS_NONSEC
+	help
+	Support for lotus xmfalcon platform.
+
+config TARGET_XMORCA
+	bool "Support xmorca"
+	select CPU_V7A
+	select DM
+	select CPU_V7A_HAS_NONSEC
+	help
+	Support for lotus xmorca platform.
+
+config TARGET_XMORCA
+	bool "Support xmorca"
+	select CPU_V7A
+	select DM
+	select CPU_V7A_HAS_NONSEC
+	help
+	Support for lotus xmorca platform.
+
+endchoice
+
+source "lotus/machine/xmfalcon/Kconfig"
+source "lotus/machine/xmorca/Kconfig"

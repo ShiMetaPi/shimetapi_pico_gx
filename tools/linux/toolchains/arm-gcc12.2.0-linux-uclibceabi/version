@@ -1,0 +1,12 @@
+# 2025-07-16 20:38:46
+# COMMITID: b70b116
+VERSION := "gcc-12.2.0 uClibc-ng-1.0.48 czyong 2024-09-09 17:05:21"
+
+# binutils-2.35
+# gcc-12.2.0
+# gmp-6.2.1
+# isl-0.23
+# linux-5.10.186
+# mpc-1.2.0
+# mpfr-4.1.0
+# uClibc-ng-1.0.48

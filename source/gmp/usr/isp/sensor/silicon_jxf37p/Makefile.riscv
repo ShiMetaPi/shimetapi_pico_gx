@@ -1,0 +1,4 @@
+
+SRCS-y += jxf37p.c
+SRCS-y += jxf37p_ctrl.c
+

@@ -1,0 +1,24 @@
+SHELL    := $(shell if [ -x "$${BASH}" ]; then echo $${BASH}; \
+	else if [ -x /bin/bash ]; then echo /bin/bash; \
+	else echo sh; fi; \
+	fi)
+
+#  $(call show_cmd,cmd,file)
+define show_cmd
+  @(CMD="  "$1"        "; echo "$${CMD:0:10}$2";)
+endef
+
+# $(call checkdir,dir)
+define checkdir
+  @(test -d $1 || mkdir -p $1)
+endef
+
+# $(call upper,val)
+define upper
+  $(strip $(shell echo $1 | tr a-z A-Z))
+endef
+
+# $(call is_enable,val,true-case,false-case)
+define is_enabled
+  $(if $(filter y,$($(strip $(1)))),$(2),$(3))
+endef

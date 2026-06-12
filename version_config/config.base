@@ -1,0 +1,118 @@
+choice
+    prompt "Chip Type"
+    default XM7206V11A
+
+config XM7206V11A
+    bool "xm7206v11a"
+
+config XM7206V10
+    bool "xm7206v10"
+
+config XM7206V10B
+    bool "xm7206v10b"
+    
+config XM7206V12A
+    bool "xm7206v12a"
+
+config XM7206V11
+    bool "xm7206v11"
+
+config XM7206V11AT
+    bool "xm7206v11at"
+endchoice
+
+config XMEDIA_CHIP_TYPE
+    string
+    default xm7206v10      if XM7206V10
+    default xm7206v10b     if XM7206V10B
+    default xm7206v11a     if XM7206V11A
+    default xm7206v12a     if XM7206V12A
+    default xm7206v11      if XM7206V11
+    default xm7206v11at    if XM7206V11AT
+
+config XMEDIA_CHIP_ARCH
+    string
+    default xmorca         if XM7206V10 || XM7206V10B || XM7206V11A || XM7206V12A || XM7206V11 || XM7206V11AT
+
+menu "Toolchains Config"
+
+choice
+    prompt "kernel toolchains"
+    default XMEDIA_KERNEL_ARM_GCC12_2_0_LINUX
+
+config XMEDIA_KERNEL_ARM_GCC12_2_0_LINUX
+    bool "arm-gcc12.2.0-linux"
+
+config XMEDIA_KERNEL_AARCH64_GCC12_2_0_LINUX
+    bool "aarch64-gcc12.2.0-linux"
+
+config XMEDIA_KERNEL_ARM_GCC12_2_0_UCLIBC_LINUX
+    bool "arm-gcc12.2.0-linux-uclibceabi"
+
+endchoice
+
+config XMEDIA_KERNEL_ARM_TOOLCHAINS
+    string
+    default arm-gcc12.2.0-linux             if XMEDIA_KERNEL_ARM_GCC12_2_0_LINUX
+    default arm-gcc12.2.0-linux-uclibceabi  if XMEDIA_KERNEL_ARM_GCC12_2_0_UCLIBC_LINUX
+    default aarch64-gcc12.2.0-linux         if XMEDIA_KERNEL_AARCH64_GCC12_2_0_LINUX
+
+config XMEDIA_CPU_ARCH
+    string
+    default arm     if XMEDIA_KERNEL_ARM_GCC12_2_0_LINUX || XMEDIA_KERNEL_ARM_GCC12_2_0_UCLIBC_LINUX
+    default arm64   if XMEDIA_KERNEL_AARCH64_GCC12_2_0_LINUX
+
+choice
+    prompt "usr 32bit toolchains"
+    default XMEDIA_USR_ARM_GCC12_2_0_LINUX
+
+config XMEDIA_USR_ARM_GCC12_2_0_LINUX
+    bool "arm-gcc12.2.0-linux"
+
+config XMEDIA_USR_ARM_GCC12_2_0_UCLIBC_LINUX
+    bool "arm-gcc12.2.0-linux-uclibceabi"
+
+endchoice
+
+config XMEDIA_USR_ARM_TOOLCHAINS
+    string
+    default arm-gcc12.2.0-linux             if XMEDIA_USR_ARM_GCC12_2_0_LINUX
+    default arm-gcc12.2.0-linux-uclibceabi  if XMEDIA_USR_ARM_GCC12_2_0_UCLIBC_LINUX
+
+choice
+    prompt "usr 64bit toolchains"
+    default XMEDIA_USR_AARCH64_GCC12_2_0_LINUX
+    depends on XMEDIA_KERNEL_AARCH64_GCC12_2_0_LINUX
+
+config XMEDIA_USR_AARCH64_GCC12_2_0_LINUX
+    bool "aarch64-gcc12.2.0-linux"
+
+endchoice
+
+config XMEDIA_USR_AARCH64_TOOLCHAINS
+    string
+    default aarch64-gcc12.2.0-linux         if XMEDIA_KERNEL_AARCH64_GCC12_2_0_LINUX
+    depends on XMEDIA_KERNEL_AARCH64_GCC12_2_0_LINUX
+
+endmenu
+
+choice
+    prompt "SDK Log Mode"
+    default XMEDIA_SDK_MODE_LOG
+
+config XMEDIA_SDK_MODE_LOG
+    bool "log"
+
+config XMEDIA_SDK_MODE_NOLOG
+    bool "nolog"
+endchoice
+
+config XMEDIA_SDK_LOG_MODE
+    string
+    default log     if XMEDIA_SDK_MODE_LOG
+    default nolog   if XMEDIA_SDK_MODE_NOLOG
+
+config XMEDIA_QUICK_START
+    bool "Support QuickStart"
+    default n
+

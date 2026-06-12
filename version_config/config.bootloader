@@ -1,0 +1,52 @@
+choice
+    prompt "Boot Type"
+    default XMEDIA_UBOOT_SUPPORT
+
+config  XMEDIA_UBOOT_SUPPORT
+    bool "uboot"
+
+endchoice
+
+choice
+    prompt "U-boot Version"
+    depends on XMEDIA_UBOOT_SUPPORT
+    default XMEDIA_UBOOT_SUPPORT_2020_01
+
+config XMEDIA_UBOOT_SUPPORT_2020_01
+   bool "u-boot-2020.01"
+
+endchoice
+
+config XMEDIA_UBOOT_VER
+   string
+   default "u-boot-2020.01" if XMEDIA_UBOOT_SUPPORT_2020_01
+
+config XMEDIA_BOOT_DEFCONFIG
+    prompt "Boot Defconfig"
+    string
+    help
+        Input config file for u-boot. Such as xxxxx_defconfig.
+        Config files are located in u-boot source: u-boot/configs
+
+config XMEDIA_BOOT_ENV_STARTADDR
+    hex "Environment Variables Partition Start Address"
+    default 0x80000
+    help
+        The start address of the partition you want to save your envioronment variables.
+        It should be alined with blocksize for Nand/Spinand/Spinor.
+
+config XMEDIA_BOOT_ENV_SIZE
+    hex "Environment Variables Image Size"
+    default 0x40000
+    help
+        The size of the Environment Variables Image. Default value is 64k.
+
+config XMEDIA_DDR_TRAINING_SUPPORT
+    bool "DDR Training Command Support"
+    default y
+    help
+        Say y here if you want to use DDR training command in boot for testing DDR window.
+
+menuconfig XMEDIA_BOOT_APP_SUPPORT
+    bool "APP Support"
+    default y

@@ -1,0 +1,99 @@
+SRCS-y  :=
+TEMPS   :=
+
+include $(CONFIG_FILE)
+include $(TOPDIR)/$(SRCDIR)Makefile
+include $(TOPDIR)/scripts/Makefile.define
+
+# find all directory in SRCS-y
+SRCS-subdir := $(filter-out %.c %.S,$(SRCS-y))
+
+# find all file in SRCS-y
+SRCS-y := $(addprefix $(SRCDIR),$(SRCS-y))
+
+# start.S file
+ifneq ("$(START)","")
+    START := $(O)$(SRCDIR)$(START:.S=.o)
+else
+    START :=
+endif
+
+ifneq ("$(TAIL)","")
+    TAIL := $(O)$(SRCDIR)$(TAIL:.S=.o)
+else
+    TAIL :=
+endif
+
+
+# relative path
+LIB_SUBOBJS := $(foreach LIB,$(SRCS-subdir),$(SRCDIR)$(LIB)lib$(LIB:/=).a)
+
+AOBJS := $(addprefix $(O),$(subst .S,.o,$(filter %.S,$(SRCS-y))))
+ADEPS := $(AOBJS:.o=.d) $(START:.o=.d) $(TAIL:.o=.d)
+COBJS := $(addprefix $(O),$(subst .c,.o,$(filter %.c,$(SRCS-y))))
+CDEPS := $(COBJS:.o=.d)
+
+ALG_LIBS := media/alg_libs/libae.a media/alg_libs/libawb.a
+# all xxx.o, exclude start.o,libxxx.a
+OBJS  := $(strip $(AOBJS) $(COBJS))
+
+# all depend file, exclude libxxx.a
+DEPS := $(CDEPS) $(ADEPS)
+
+_MKDEP  := $(O)$(SRCDIR)$(MKDEP)
+P_MKDEP := $(O)$(SRCDIR)../$(MKDEP)
+
+$(shell test -d $(O)$(SRCDIR) || mkdir -p $(O)$(SRCDIR))
+################################################################################
+
+lib$(notdir $(SRCDIR:/=)).a: $(_MKDEP) $(LIB_SUBOBJS) $(OBJS) $(CONFIG_FILE)
+	$(call show_cmd,LD,$(SRCDIR)$@)
+	$(Q)${LD} $(LDFLAGS) -EL -r -o $(O)$(SRCDIR)$@ $(OBJS) $(addprefix $(O),$(LIB_SUBOBJS))
+
+$(MCU).elf: $(START) $(TAIL) $(OBJS) $(_MKDEP) $(O)$(SRCDIR)$(LINKLDS) $(CONFIG_FILE) force
+	$(call show_cmd,LD,libstage1.a)
+	$(Q)${LD} $(LDFLAGS) -EL -r -o $(O)$(SRCDIR)/libstage1.a $(OBJS) $(addprefix $(O),$(LIBS))
+	$(call show_cmd,LD,libstage2.a)
+	$(Q)${LD} $(LDFLAGS) -EL -r -o $(O)$(SRCDIR)/libstage2.a $(addprefix $(O),$(LIBS-stage2)) $(ALG_LIBS)
+	$(call show_cmd,LD,$@)
+	$(Q)$(LD) -L$(O)$(SRCDIR) -X -Bstatic \
+		--gc-sections $(if $(filter 1,$(strip $(V))),--print-gc-sections) \
+		--print-memory-usage \
+		-T$(O)$(SRCDIR)$(LINKLDS) \
+		-Ttext $(CONFIG_TEXT_BASE) \
+		$(LDFLAGS) \
+		-Map $(O)$(@:.elf=.map) -o $(O)$@
+
+$(O)$(SRCDIR)$(LINKLDS): $(TOPDIR)/$(SRCDIR)$(addsuffix .S,$(LINKLDS)) force
+	$(call show_cmd,CC,$@)
+	$(Q)$(CC) -E -P $(ASFLAGS) -DLINKER_SCRIPT -o $@ $<
+
+$(LIB_SUBOBJS): $(CONFIG_FILE) $(_MKDEP)
+	$(Q)$(MAKE) $(MKFLAGS) -C $(TOPDIR)/$(@D)/ SRCDIR="$(@D)/" O="$(O)" $(@F)
+
+$(COBJS): $(_MKDEP) $(CONFIG_FILE)
+	$(call show_cmd,CC,$(SRCDIR)$(@F:.o=.c))
+	$(call $(@F:.o=_cmd))
+
+$(CDEPS): $(_MKDEP) $(CONFIG_FILE)
+	$(call show_cmd,DEP,$(SRCDIR)$(@F:.d=.c))
+	$(Q)$(CC) -M $(TOPDIR)/$(SRCDIR)$(@F:.d=.c) $(CFLAGS) \
+	    | sed -e "s,^$(@F:.d=.o),$(@:.d=.o),g" > $(@)
+	(echo $(@F:.d=_cmd)=$$\(Q\)$(CC) -c $(TOPDIR)/$(SRCDIR)$(@F:.d=.c) $(CFLAGS) $$\(CFLAGS_$(basename $(@F))\) -o $(@:.d=.o);) >> $(@)
+
+$(AOBJS) $(START) $(TAIL): $(_MKDEP) $(CONFIG_FILE)
+	$(call show_cmd,CC,$(SRCDIR)$(@F:.o=.S))
+	$(call $(@F:.o=_cmd))
+
+$(ADEPS): $(_MKDEP) $(CONFIG_FILE)
+	$(call show_cmd,DEP,$(SRCDIR)$(@F:.d=.S))
+	$(Q)$(CC) -M $(TOPDIR)/$(SRCDIR)$(@F:.d=.S) $(ASFLAGS) \
+	    | sed -e "s,^$(@F:.d=.o),$(@:.d=.o),g" > $(@)
+	(echo $(@F:.d=_cmd)=$(Q)$(CC) -c $(TOPDIR)/$(SRCDIR)$(@F:.d=.S) $(ASFLAGS) $$\(CFLAGS_$(basename $(@F))\) -o $(@:.d=.o);) >> $(@)
+
+$(_MKDEP): $(TOPDIR)/$(SRCDIR)Makefile $(P_MKDEP)
+	$(Q)touch $@
+
+force:;
+
+sinclude $(DEPS)

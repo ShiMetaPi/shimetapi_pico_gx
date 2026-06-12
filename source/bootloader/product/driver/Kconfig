@@ -1,0 +1,19 @@
+menu "Product driver set"
+
+config CMD_VO_DRIVER
+        bool "Support VO driver"
+        default n
+
+config MIPI_LCD_SUPPORT
+        bool "Support MIPI screen parameter set"
+        depends on CMD_VO_DRIVER
+        default n
+
+config MCU_LCD_SUPPORT
+        bool "Support MCU screen parameter set"
+        depends on CMD_VO_DRIVER
+        default n
+
+endmenu
+
+source "product/driver/ssp/Kconfig"

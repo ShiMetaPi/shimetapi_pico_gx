@@ -1,0 +1,43 @@
+---------------------  make help ----------------------
+
+OVERVIEW:
+    This help file show you the make command you can use in the sdk root directory.
+
+make:
+    The same as make help.
+
+make build:
+    A totally build of the sdk.
+
+make clean:
+    A totally clean of the sdk.
+
+make prepare:
+    Prepare to setup the build environment.
+
+make help:
+    Show this document.
+
+make uboot:
+    Make the uboot.
+
+make uboot_clean:
+    Make clean of the uboot.
+
+make linux:
+    Make the linux kernel.
+
+make linux_clean:
+    Make clean of the linux kernel.
+
+make gmp:
+    Make the gmp modules.
+
+make gmp_clean:
+    Make clean of the gmp modules.
+
+make sample:
+    Make the sample code.
+
+make sample_clean:
+    Make clean of the sample code.

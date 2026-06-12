@@ -1,0 +1,1 @@
+本sample不会启动isp，vpss等业务，需先启动其它sample来启动isp，vpss等业务后再运行本sample。

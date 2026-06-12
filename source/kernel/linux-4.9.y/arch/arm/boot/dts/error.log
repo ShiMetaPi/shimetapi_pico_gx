@@ -1,0 +1,4 @@
+make: *** No rule to make target 'uImage'.  Stop.
+
+[1;31m #### make target "ARCH=arm CROSS_COMPILE=arm-gcc12.2.0-linux-uclibceabi- O=/home/cailihan/ipc/7206/sdk/source/kernel/linux-4.9.y/arch/arm/boot/dts/../out uImage -j16" failed !!! ####[1;0m
+

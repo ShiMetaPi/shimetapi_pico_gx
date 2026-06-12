@@ -1,0 +1,4 @@
+
+SRCS-y += gc4663.c
+SRCS-y += gc4663_ctrl.c
+

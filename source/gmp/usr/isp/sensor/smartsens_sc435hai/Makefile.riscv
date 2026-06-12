@@ -1,0 +1,3 @@
+
+SRCS-y += sc435hai.c
+SRCS-y += sc435hai_ctrl.c

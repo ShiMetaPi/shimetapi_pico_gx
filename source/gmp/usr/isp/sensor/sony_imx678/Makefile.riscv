@@ -1,0 +1,4 @@
+
+SRCS-y += imx678.c
+SRCS-y += imx678_ctrl.c
+

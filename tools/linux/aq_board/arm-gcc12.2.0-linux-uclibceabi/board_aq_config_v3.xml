@@ -1,0 +1,228 @@
+<AQ_XML ALIAS="AQ_PARAS" VERSION="2.0">
+    <ENUM_DEF>
+        <ENUM ID="VQE_Enhance_Version_E" ALIAS="Audio VQE Enhance Version Enum" COMMENT="">
+            <ENUM_ITEM ALIAS="VQE_ENHANCE_VERSION_DISABLE" TYPE="int" VALUE="0" />
+            <ENUM_ITEM ALIAS="VQE_ENHANCE_VERSION_3" TYPE="int" VALUE="3" />
+        </ENUM>
+        <ENUM ID="Dev_E" ALIAS="DevSelect" COMMENT="Audio Device Enum">
+            <ENUM_ITEM ALIAS="Dev0" TYPE="int" VALUE="0" />
+        </ENUM>
+        <ENUM ID="Channel_E" ALIAS="ChannelNumber" COMMENT="Audio Channel Enum">
+            <ENUM_ITEM ALIAS="chn0" TYPE="int" VALUE="0" />
+        </ENUM>
+        <ENUM ID="Switch_E" ALIAS="Switch" COMMENT="Switch Enum">
+            <ENUM_ITEM ALIAS="close" TYPE="int" VALUE="0" />
+            <ENUM_ITEM ALIAS="open" TYPE="int" VALUE="1" />
+        </ENUM>
+        <ENUM ID="HpfFreq_E" ALIAS="HpfFreq" COMMENT="HPF frequency Enum">
+            <ENUM_ITEM ALIAS="80Hz" TYPE="int" VALUE="80" />
+            <ENUM_ITEM ALIAS="120Hz" TYPE="int" VALUE="120" />
+            <ENUM_ITEM ALIAS="150Hz" TYPE="int" VALUE="150" />
+        </ENUM>
+        <ENUM ID="UsrMode_E" ALIAS="UsrMode" COMMENT="">
+            <ENUM_ITEM ALIAS="AutoMode" TYPE="int" VALUE="0" />
+            <ENUM_ITEM ALIAS="UserMode" TYPE="int" VALUE="1" />
+        </ENUM>
+        <ENUM ID="AnrMode_E" ALIAS="ANRMode" COMMENT="">
+            <ENUM_ITEM ALIAS="SpeechMode" TYPE="int" VALUE="0" />
+            <ENUM_ITEM ALIAS="NoiseMode" TYPE="int" VALUE="1" />
+        </ENUM>
+        <ENUM ID="AnrScene_E" ALIAS="ANRScene" COMMENT="">
+            <ENUM_ITEM ALIAS="NormalScene" TYPE="int" VALUE="0" />
+            <ENUM_ITEM ALIAS="MusicScene" TYPE="int" VALUE="1" />
+        </ENUM>
+        <ENUM ID="Samplerate_E" ALIAS="SampleRate" COMMENT="SampleRate Enum">
+            <ENUM_ITEM ALIAS="8000" TYPE="int" VALUE="8000" />
+            <ENUM_ITEM ALIAS="16000" TYPE="int" VALUE="16000" />
+        </ENUM>
+    </ENUM_DEF>
+
+    <PROJECT_GROUP ID="CommonConfig" ALIAS="Audio Common Config">
+        <SUB_GROUP ID="Volume" ALIAS="Volume" COMMENT="volume config">
+            <MODULE>
+                <MEMBER ID="codecInputVolume" ALIAS="Codec Input Volume" LAYOUT="inputnumber+slider" RANGE="[-95, 48]" COMMENT="" TYPE="int" VALUE="10" />
+                <MEMBER ID="vqeAiVolume" ALIAS="VQE AI Volume" LAYOUT="inputnumber+slider" RANGE="[-81, 18]" COMMENT="" TYPE="int" VALUE="0" />
+                <MEMBER ID="vqeAoVolume" ALIAS="VQE AO Volume" LAYOUT="inputnumber+slider" RANGE="[-81, 18]" COMMENT="" TYPE="int" VALUE="0" />
+            </MODULE>
+        </SUB_GROUP>
+    </PROJECT_GROUP>
+
+    <PROJECT_GROUP ALIAS="AIVQE" SUPPORT_VERSION="VQE_Enhance_Version_E">
+        <SUB_GROUP ID="AIHandle" ALIAS="AI Handle" COMMENT="">
+            <MODULE ID="AIBasicConfig" ALIAS="AI Basic Config" COMMENT="">
+                <MEMBER ID="AIDev" ALIAS="AI Dev" LAYOUT="select" RANGE="[0, 0]" COMMENT="" TYPE="Dev_E" VALUE="0" />
+                <MEMBER ID="AIChn" ALIAS="AI Chn" LAYOUT="select" RANGE="[0, 0]" COMMENT="" TYPE="Channel_E" VALUE="0" />
+                <MEMBER ID="AIVqeEnHanceVersion" ALIAS="AI VQE Enhance Version" LAYOUT="select" RANGE="[0, 3]" COMMENT="" TYPE="VQE_Enhance_Version_E" VALUE="3" />
+                <MEMBER ID="SampleRate" ALIAS="SampleRate" LAYOUT="select" RANGE="[8000, 16000]" COMMENT="samplerate" TYPE="Samplerate_E" VALUE="16000" />
+            </MODULE>
+        </SUB_GROUP>
+        <SUB_GROUP ID="AI_VQE_MODULE" ALIAS="AI VqeModule">
+            <MODULE ID="OPEN_MASK" ALIAS="openMask" COMMENT="enable Module mask">
+                <MEMBER ID="enableHPF" ALIAS="enableHPF" LAYOUT="checkbox" RANGE="[0, 1]" COMMENT="" TYPE="bool" VALUE="1" />
+                <MEMBER ID="enableANR" ALIAS="enableANR" LAYOUT="checkbox" RANGE="[0, 1]" COMMENT="" TYPE="bool" VALUE="1" />
+                <MEMBER ID="enableAGC" ALIAS="enableAGC" LAYOUT="checkbox" RANGE="[0, 1]" COMMENT="" TYPE="bool" VALUE="1" />
+                <MEMBER ID="enableEQ" ALIAS="enableEQ" LAYOUT="checkbox" RANGE="[0, 1]" COMMENT="" TYPE="bool" VALUE="0" />
+            </MODULE>
+            <MODULE ID="AI_HPF_CONFIG_S" ALIAS="AI HPF" COMMENT="">
+                <MEMBER ID="enMode" ALIAS="User Mode" LAYOUT="switch" RANGE="[0, 1]" COMMENT="" TYPE="UsrMode_E" VALUE="0" />
+                <MEMBER ID="enHpfFreq" ALIAS="HpfFreq" LAYOUT="select" RANGE="[80, 150]" COMMENT="" TYPE="HpfFreq_E" VALUE="80" />
+            </MODULE>
+            <MODULE ID="AI_ANR_CONFIG_S" ALIAS="AI ANR" COMMENT="Ai ANR Config">
+                <MEMBER ID="enMode" ALIAS="User Mode" LAYOUT="switch" RANGE="[0, 1]" COMMENT="" TYPE="UsrMode_E" VALUE="0" />
+                <MEMBER ID="u32Level" ALIAS="Level" LAYOUT="inputnumber+slider" RANGE="[0, 3]" COMMENT="" TYPE="int" VALUE="0" />
+            </MODULE>
+            <MODULE ID="AI_AGC_CONFIG_S" ALIAS="AI AGC" COMMENT="Ai AGC Config">
+                <MEMBER ID="enMode" ALIAS="User Mode" LAYOUT="switch" RANGE="[0, 1]" COMMENT="" TYPE="UsrMode_E" VALUE="0" />
+                <MEMBER ID="s32TargetLevel" ALIAS="Target Level" LAYOUT="inputnumber+slider" RANGE="[-20, -1]" COMMENT="" TYPE="int" VALUE="-20" />
+                <MEMBER ID="u32MaxGain" ALIAS="Max Gain" LAYOUT="inputnumber+slider" RANGE="[0, 30]" COMMENT="" TYPE="int" VALUE="0" />
+                <MEMBER ID="s32NoiseFloor" ALIAS="Noise Floor" LAYOUT="inputnumber+slider" RANGE="[-120, -25]" COMMENT="" TYPE="int" VALUE="-70" />
+                <MEMBER ID="u32Ratio" ALIAS="Ratio" LAYOUT="inputnumber+slider" RANGE="[0, 100]" COMMENT="" TYPE="int" VALUE="10" />
+                <MEMBER ID="u32AttackTime" ALIAS="Attack Time" LAYOUT="inputnumber+slider" RANGE="[1, 100]" COMMENT="" TYPE="int" VALUE="20" />
+                <MEMBER ID="u32ReleaseTime" ALIAS="Release Time" LAYOUT="inputnumber+slider" RANGE="[1, 100]" COMMENT="" TYPE="int" VALUE="20" />
+            </MODULE>
+            <MODULE ID="AI_EQ_CONFIG_S" ALIAS="AI EQ">
+                <MEMBER ID="s8GaindB" ALIAS="GaindB" LAYOUT="" RANGE="[-50, 20]" COMMENT="">
+                    <MEMBER_SUB ID="s8GaindB0" ALIAS="GaindB0" COMMENT="frequency bin: 60Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB1" ALIAS="GaindB1" COMMENT="frequency bin: 100Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB2" ALIAS="GaindB2" COMMENT="frequency bin: 150Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB3" ALIAS="GaindB3" COMMENT="frequency bin: 200Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB4" ALIAS="GaindB4" COMMENT="frequency bin: 250Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB5" ALIAS="GaindB5" COMMENT="frequency bin: 350Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB6" ALIAS="GaindB6" COMMENT="frequency bin: 500Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB7" ALIAS="GaindB7" COMMENT="frequency bin: 800Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB8" ALIAS="GaindB8" COMMENT="frequency bin: 1200Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB9" ALIAS="GaindB9" COMMENT="frequency bin: 1600Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB10" ALIAS="GaindB10" COMMENT="frequency bin: 2000Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB11" ALIAS="GaindB11" COMMENT="frequency bin: 2400Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB12" ALIAS="GaindB12" COMMENT="frequency bin: 2500Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB13" ALIAS="GaindB13" COMMENT="frequency bin: 2800Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB14" ALIAS="GaindB14" COMMENT="frequency bin: 3100Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB15" ALIAS="GaindB15" COMMENT="frequency bin: 3400Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB16" ALIAS="GaindB16" COMMENT="frequency bin: 3600Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB17" ALIAS="GaindB17" COMMENT="frequency bin: 3800Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB18" ALIAS="GaindB18" COMMENT="frequency bin: 3900Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB19" ALIAS="GaindB19" COMMENT="frequency bin: 4000Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB20" ALIAS="GaindB20" COMMENT="frequency bin: 4500Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB21" ALIAS="GaindB21" COMMENT="frequency bin: 5000Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB22" ALIAS="GaindB22" COMMENT="frequency bin: 5500Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB23" ALIAS="GaindB23" COMMENT="frequency bin: 6000Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB24" ALIAS="GaindB24" COMMENT="frequency bin: 6500Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB25" ALIAS="GaindB25" COMMENT="frequency bin: 7000Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB26" ALIAS="GaindB26" COMMENT="frequency bin: 7300Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB27" ALIAS="GaindB27" COMMENT="frequency bin: 7600Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB28" ALIAS="GaindB28" COMMENT="frequency bin: 7800Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB29" ALIAS="GaindB29" COMMENT="frequency bin: 8000Hz" VALUE="0" />
+                </MEMBER>
+            </MODULE>
+        </SUB_GROUP>
+        <SUB_GROUP ID="AI_DETECT_MODULE" ALIAS="AI DetModule">
+        	<MODULE ID="ENABLE_DETECT" ALIAS="enableDetect" COMMENT="enable Module">
+                <MEMBER ID="enableDet" ALIAS="enable" LAYOUT="checkbox" RANGE="[0, 1]" COMMENT="" TYPE="bool" VALUE="0" />
+            </MODULE>
+            <MODULE ID="OPEN_MASK" ALIAS="openMask" COMMENT="enable Module mask">
+                <MEMBER ID="enableHPF" ALIAS="enableHPF" LAYOUT="checkbox" RANGE="[0, 1]" COMMENT="" TYPE="bool" VALUE="1" />
+                <MEMBER ID="enableBCD" ALIAS="enableBCD" LAYOUT="checkbox" RANGE="[0, 1]" COMMENT="" TYPE="bool" VALUE="1" />
+                <MEMBER ID="enableVED" ALIAS="enableVED" LAYOUT="checkbox" RANGE="[0, 1]" COMMENT="" TYPE="bool" VALUE="1" />
+                <MEMBER ID="enableGBD" ALIAS="enableGBD" LAYOUT="checkbox" RANGE="[0, 1]" COMMENT="" TYPE="bool" VALUE="0" />
+            </MODULE>
+            <MODULE ID="AI_DET_HPF_CONFIG_S" ALIAS="AI DET HPF" COMMENT="">
+                <MEMBER ID="enMode" ALIAS="User Mode" LAYOUT="switch" RANGE="[0, 1]" COMMENT="" TYPE="UsrMode_E" VALUE="0" />
+                <MEMBER ID="enHpfFreq" ALIAS="HpfFreq" LAYOUT="select" RANGE="[80, 150]" COMMENT="" TYPE="HpfFreq_E" VALUE="80" />
+            </MODULE>
+            <MODULE ID="AI_BCD_CONFIG_S" ALIAS="AI DET BCD" COMMENT="Ai BCD Config">
+                <MEMBER ID="enMode" ALIAS="User Mode" LAYOUT="switch" RANGE="[0, 1]" COMMENT="" TYPE="UsrMode_E" VALUE="1" />
+                <MEMBER ID="u32AlarmThreshold" ALIAS="Alarm Threshold" LAYOUT="inputnumber+slider" RANGE="[0, 100]" COMMENT="" TYPE="int" VALUE="50" />
+                <MEMBER ID="u32TimeLimit" ALIAS="Time Limit" LAYOUT="inputnumber+slider" RANGE="[0, 120]" COMMENT="unit: s" TYPE="int" VALUE="5" />
+                <MEMBER ID="u32TimeLimitCnt" ALIAS="Time Limit Count" LAYOUT="inputnumber+slider" RANGE="[1, 5]" COMMENT="" TYPE="int" VALUE="1" />
+                <MEMBER ID="u32IntervalTime" ALIAS="Interval Time" LAYOUT="inputnumber+slider" RANGE="[0, 120]" COMMENT="unit: s" TYPE="int" VALUE="2" />
+            </MODULE>
+            <MODULE ID="AI_VED_CONFIG_S" ALIAS="AI DET VED" COMMENT="">
+                <MEMBER ID="enMode" ALIAS="User Mode" LAYOUT="switch" RANGE="[0, 1]" COMMENT="" TYPE="UsrMode_E" VALUE="0" />
+                <MEMBER ID="s32VolumeThreshold" ALIAS="Volume Threshold" LAYOUT="inputnumber+slider" RANGE="[-80, 0]" COMMENT="" TYPE="int" VALUE="-15" />
+                <MEMBER ID="enMutationFlag" ALIAS="Mutation Flag" LAYOUT="switch" RANGE="[0, 1]" COMMENT="" TYPE="Switch_E" VALUE="1" />
+                <MEMBER ID="s32FastChangeThreshold" ALIAS="Fast Change Threshold" LAYOUT="inputnumber+slider" RANGE="[10, 80]" COMMENT="" TYPE="int" VALUE="15" />
+                <MEMBER ID="s32SlowChangeThreshold" ALIAS="Slow Change Threshold" LAYOUT="inputnumber+slider" RANGE="[1, 20]" COMMENT="" TYPE="int" VALUE="8" />
+           </MODULE>
+           <MODULE ID="AI_GBD_CONFIG_S" ALIAS="AI DET GBD" COMMENT="Ai GBD Config">
+                <MEMBER ID="enMode" ALIAS="User Mode" LAYOUT="switch" RANGE="[0, 1]" COMMENT="" TYPE="UsrMode_E" VALUE="1" />
+                <MEMBER ID="u32AlarmThreshold" ALIAS="Alarm Threshold" LAYOUT="inputnumber+slider" RANGE="[0, 100]" COMMENT="" TYPE="int" VALUE="80" />
+                <MEMBER ID="u32TimeLimit" ALIAS="Time Limit" LAYOUT="inputnumber+slider" RANGE="[0, 120]" COMMENT="unit: ms" TYPE="int" VALUE="3" />
+                <MEMBER ID="u32TimeLimitCnt" ALIAS="Time Limit Count" LAYOUT="inputnumber+slider" RANGE="[1, 5]" COMMENT="" TYPE="int" VALUE="5" />
+                <MEMBER ID="u32IntervalTime" ALIAS="Interval Time" LAYOUT="inputnumber+slider" RANGE="[0, 120]" COMMENT="unit: s" TYPE="int" VALUE="3" />
+           </MODULE>
+        </SUB_GROUP>
+    </PROJECT_GROUP>
+
+    <PROJECT_GROUP ALIAS="AOVQE" VERSION="VQE_Enhance_Version_E">
+        <SUB_GROUP ID="AOHandle" ALIAS="AO Handle" COMMENT="">
+            <MODULE>
+                <MEMBER ID="AODev" ALIAS="AO Dev" LAYOUT="select" RANGE="[0, 0]" COMMENT="" TYPE="Dev_E" VALUE="0" />
+                <MEMBER ID="AOChn" ALIAS="AO Chn" LAYOUT="select" RANGE="[0, 0]" COMMENT="" TYPE="Channel_E" VALUE="0" />
+                <MEMBER ID="AOVqeEnHanceVersion" ALIAS="Enhance Version" LAYOUT="select" RANGE="[0, 3]" COMMENT="" TYPE="VQE_Enhance_Version_E" VALUE="0" />
+            </MODULE>
+        </SUB_GROUP>
+        <SUB_GROUP ID="AO_VQE_MODULE" ALIAS="AO VqeModule">
+            <MODULE ID="OPEN_MASK" ALIAS="openMask" COMMENT="enable module mask">
+                <MEMBER ID="enableHPF" ALIAS="enableHPF" LAYOUT="checkbox" RANGE="[0, 1]" COMMENT="" TYPE="bool" VALUE="0" />
+                <MEMBER ID="enableANR" ALIAS="enableANR" LAYOUT="checkbox" RANGE="[0, 1]" COMMENT="" TYPE="bool" VALUE="0" />
+                <MEMBER ID="enableAGC" ALIAS="enableAGC" LAYOUT="checkbox" RANGE="[0, 1]" COMMENT="" TYPE="bool" VALUE="0" />
+                <MEMBER ID="enableEQ" ALIAS="enableEQ" LAYOUT="checkbox" RANGE="[0, 1]" COMMENT="" TYPE="bool" VALUE="0" />
+            </MODULE>
+            <MODULE ID="AO_HPF_CONFIG_S" ALIAS="AO HPF" COMMENT="">
+                <MEMBER ID="enMode" ALIAS="User Mode" LAYOUT="switch" RANGE="[0, 1]" COMMENT="" TYPE="UsrMode_E" VALUE="0" />
+                <MEMBER ID="enHpfFreq" ALIAS="Hpf Freq" LAYOUT="select" RANGE="[80, 150]" COMMENT="" TYPE="HpfFreq_E" VALUE="120" />
+            </MODULE>
+            <MODULE ID="AO_ANR_CONFIG_S" ALIAS="AO ANR" COMMENT="">
+                <MEMBER ID="enMode" ALIAS="Usr Mode Select" LAYOUT="switch" RANGE="[0, 1]" COMMENT="" TYPE="UsrMode_E" VALUE="0" />
+                <MEMBER ID="enUsrScene" ALIAS="ANR Scene" LAYOUT="switch" RANGE="[0, 1]" COMMENT="" TYPE="AnrScene_E" VALUE="0" />
+                <MEMBER ID="enNrMode" ALIAS="ANR Mode" LAYOUT="switch" RANGE="[0, 1]" COMMENT="" TYPE="AnrMode_E" VALUE="0" />
+                <MEMBER ID="u32MaxSuppressGain" ALIAS="Max Suppress Gain" LAYOUT="inputnumber+slider" RANGE="[1, 10]" COMMENT="" TYPE="int" VALUE="1" />
+                <MEMBER ID="u32SuppressLevel" ALIAS="Suppress Level" LAYOUT="inputnumber+slider" RANGE="[0, 9]" COMMENT="" TYPE="int" VALUE="0" />
+                <MEMBER ID="u32NonstationarySuppressLevel" ALIAS="Nonstationary Suppress Level" LAYOUT="inputnumber+slider" RANGE="[0, 9]" COMMENT="" TYPE="int" VALUE="0" />
+            </MODULE>
+            <MODULE ID="AO_AGC_CONFIG_S" ALIAS="AO AGC" COMMENT="">
+                <MEMBER ID="enMode" ALIAS="Usr Mode Select" LAYOUT="switch" RANGE="[0, 1]" COMMENT="" TYPE="UsrMode_E" VALUE="0" />
+                <MEMBER ID="s32TargetLevel" ALIAS="Target Level" LAYOUT="inputnumber+slider" RANGE="[-20, -1]" COMMENT="" TYPE="int" VALUE="-20" />
+                <MEMBER ID="u32MaxGain" ALIAS="Max Gain" LAYOUT="inputnumber+slider" RANGE="[0, 30]" COMMENT="" TYPE="int" VALUE="0" />
+                <MEMBER ID="s32NoiseFloor" ALIAS="Noise Floor" LAYOUT="inputnumber+slider" RANGE="[-120, -25]" COMMENT="" TYPE="int" VALUE="-70" />
+                <MEMBER ID="u32Ratio" ALIAS="Ratio" LAYOUT="inputnumber+slider" RANGE="[0, 100]" COMMENT="" TYPE="int" VALUE="10" />
+                <MEMBER ID="u32AttackTime" ALIAS="Attack Time" LAYOUT="inputnumber+slider" RANGE="[1, 100]" COMMENT="" TYPE="int" VALUE="20" />
+                <MEMBER ID="u32ReleaseTime" ALIAS="Release Time" LAYOUT="inputnumber+slider" RANGE="[1, 100]" COMMENT="" TYPE="int" VALUE="20" />
+            </MODULE>
+            <MODULE ID="AO_EQ_CONFIG_S" ALIAS="AO EQ">
+                <MEMBER ID="s8GaindB" ALIAS="GaindB" LAYOUT="" RANGE="[-50, 20]" COMMENT="">
+                    <MEMBER_SUB ID="s8GaindB0" ALIAS="GaindB0" COMMENT="frequency bin: 60Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB1" ALIAS="GaindB1" COMMENT="frequency bin: 100Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB2" ALIAS="GaindB2" COMMENT="frequency bin: 150Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB3" ALIAS="GaindB3" COMMENT="frequency bin: 200Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB4" ALIAS="GaindB4" COMMENT="frequency bin: 250Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB5" ALIAS="GaindB5" COMMENT="frequency bin: 350Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB6" ALIAS="GaindB6" COMMENT="frequency bin: 500Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB7" ALIAS="GaindB7" COMMENT="frequency bin: 800Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB8" ALIAS="GaindB8" COMMENT="frequency bin: 1200Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB9" ALIAS="GaindB9" COMMENT="frequency bin: 1600Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB10" ALIAS="GaindB10" COMMENT="frequency bin: 2000Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB11" ALIAS="GaindB11" COMMENT="frequency bin: 2400Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB12" ALIAS="GaindB12" COMMENT="frequency bin: 2500Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB13" ALIAS="GaindB13" COMMENT="frequency bin: 2800Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB14" ALIAS="GaindB14" COMMENT="frequency bin: 3100Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB15" ALIAS="GaindB15" COMMENT="frequency bin: 3400Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB16" ALIAS="GaindB16" COMMENT="frequency bin: 3600Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB17" ALIAS="GaindB17" COMMENT="frequency bin: 3800Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB18" ALIAS="GaindB18" COMMENT="frequency bin: 3900Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB19" ALIAS="GaindB19" COMMENT="frequency bin: 4000Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB20" ALIAS="GaindB20" COMMENT="frequency bin: 4500Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB21" ALIAS="GaindB21" COMMENT="frequency bin: 5000Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB22" ALIAS="GaindB22" COMMENT="frequency bin: 5500Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB23" ALIAS="GaindB23" COMMENT="frequency bin: 6000Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB24" ALIAS="GaindB24" COMMENT="frequency bin: 6500Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB25" ALIAS="GaindB25" COMMENT="frequency bin: 7000Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB26" ALIAS="GaindB26" COMMENT="frequency bin: 7300Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB27" ALIAS="GaindB27" COMMENT="frequency bin: 7600Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB28" ALIAS="GaindB28" COMMENT="frequency bin: 7800Hz" VALUE="0" />
+                    <MEMBER_SUB ID="s8GaindB29" ALIAS="GaindB29" COMMENT="frequency bin: 8000Hz" VALUE="0" />
+                </MEMBER>
+            </MODULE>
+        </SUB_GROUP>
+    </PROJECT_GROUP>
+</AQ_XML>

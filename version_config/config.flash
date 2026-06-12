@@ -1,0 +1,31 @@
+menu "Flash Config"
+
+menuconfig XMEDIA_NAND_FLASH_SUPPORT
+    bool "Nand Flash support"
+
+menu "Nand Flash device support"
+    depends on XMEDIA_NAND_FLASH_SUPPORT
+
+config XMEDIA_NAND_SUPPORT
+    bool "Nand Flash Support"
+config XMEDIA_SPI_NAND_SUPPORT
+    bool "Spi-Nand Flash Support"
+endmenu
+
+menuconfig XMEDIA_SPI_SUPPORT
+    bool "SPI Flash Support"
+    default y
+    help
+
+config  XMEDIA_SPI_BLOCK_SIZE
+    string "Block Size"
+    depends on XMEDIA_SPI_SUPPORT
+    default "64k"
+    help
+      set SPI flash block size.
+
+config XMEDIA_EMMC_SUPPORT
+    bool "eMMC Flash Support"
+    default n
+
+endmenu

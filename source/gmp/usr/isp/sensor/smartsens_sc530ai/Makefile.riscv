@@ -1,0 +1,4 @@
+
+SRCS-y += sc530ai.c
+SRCS-y += sc530ai_ctrl.c
+

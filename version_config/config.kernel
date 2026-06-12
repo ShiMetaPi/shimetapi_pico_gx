@@ -1,0 +1,48 @@
+#+++++++++++++++++++++++++++++++++++++++++++++++++++
+choice
+    prompt "Kernel Version"
+    default XMEDIA_LINUX_5_10_Y
+
+config XMEDIA_LINUX_5_10_Y
+    bool "linux-5.10.y"
+
+config XMEDIA_LINUX_4_9_Y
+    bool "linux-4.9.y"
+
+endchoice
+
+config XMEDIA_KERNEL_VERSION
+    string
+    default linux-5.10.y    if XMEDIA_LINUX_5_10_Y
+    default linux-4.9.y    if XMEDIA_LINUX_4_9_Y
+
+config XMEDIA_KERNEL_SUPPORT_SMP
+    bool "Kernel SMP Support"
+    default y
+
+config XMEDIA_KERNEL_DEFCONFIG
+    prompt "Kernel Defconfig"
+    string
+    help
+        Input config file for kernel. Such as xxxxx_defconfig.
+        Config files are located in kernel source: arch/arm/configs.
+
+config XMEDIA_GMP_BUILDIN
+    prompt "Build GMP in Kernel"
+    bool
+    help
+       Say y to build GMP modules in kernel.
+
+menu "InitRamdisk Config"
+
+config XMEDIA_TOYBOX_CFG_NAME
+    prompt "Toybox Config File For InitRamdisk"
+    string
+    default toybox-0.8.8
+    help
+      Input config file for initramdisk toybox. Such as xxxxx.config.
+      Config files are located in toybox source: toybox-0.*.*.config
+
+endmenu
+
+

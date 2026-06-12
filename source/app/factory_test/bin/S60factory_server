@@ -1,0 +1,89 @@
+#!/bin/sh
+
+DAEMON=/usr/bin/factory_server
+PIDFILE=/var/run/factory_server.pid
+LOGFILE=/tmp/factory_server.log
+FIRST_BOOT_FLAG=/etc/.factory_server_first_boot_done
+RESULT_FILE=/etc/factory_test_result.json
+RESULT_FILE_TMP=/tmp/factory_test_result.json
+
+start() {
+    echo "Starting factory_server..."
+
+    if [ ! -x "$DAEMON" ]; then
+        echo "factory_server not found: $DAEMON"
+        return 1
+    fi
+
+    if [ -f "$PIDFILE" ] && kill -0 "$(cat "$PIDFILE" 2>/dev/null)" 2>/dev/null; then
+        echo "factory_server already running"
+        return 0
+    fi
+
+    mkdir -p /var/run
+    nohup "$DAEMON" >"$LOGFILE" 2>&1 &
+    echo $! > "$PIDFILE"
+    return 0
+}
+
+start_once_on_boot() {
+    if [ -f "$FIRST_BOOT_FLAG" ]; then
+        echo "factory_server first-boot autostart already completed"
+        return 0
+    fi
+
+    if { [ -f "$RESULT_FILE" ] && grep -q '"test_finished"[[:space:]]*:[[:space:]]*true' "$RESULT_FILE" 2>/dev/null; } || \
+       { [ -f "$RESULT_FILE_TMP" ] && grep -q '"test_finished"[[:space:]]*:[[:space:]]*true' "$RESULT_FILE_TMP" 2>/dev/null; }; then
+        echo "factory_server test already finished"
+        touch "$FIRST_BOOT_FLAG"
+        return 0
+    fi
+
+    if start; then
+        return 0
+    fi
+
+    return 1
+}
+
+stop() {
+    echo "Stopping factory_server..."
+
+    if [ -f "$PIDFILE" ]; then
+        pid="$(cat "$PIDFILE" 2>/dev/null)"
+        if [ -n "$pid" ] && kill -0 "$pid" 2>/dev/null; then
+            kill "$pid" 2>/dev/null
+            sleep 1
+        fi
+        rm -f "$PIDFILE"
+    fi
+
+    killall factory_server 2>/dev/null
+    return 0
+}
+
+restart() {
+    stop
+    start
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    restart)
+        restart
+        ;;
+    "")
+        start_once_on_boot
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart}"
+        exit 1
+        ;;
+esac
+
+exit 0

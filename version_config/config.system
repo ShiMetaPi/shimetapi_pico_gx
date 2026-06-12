@@ -1,0 +1,11 @@
+menu "Kernel"
+source "version_config/config.kernel"
+endmenu
+
+menu "Filesystem"
+source "version_config/config.filesystem"
+endmenu
+
+menu "Tools"
+source "version_config/config.tools"
+endmenu

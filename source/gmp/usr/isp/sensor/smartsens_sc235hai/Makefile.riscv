@@ -1,0 +1,4 @@
+
+SRCS-y += sc235hai.c
+SRCS-y += sc235hai_ctrl.c
+

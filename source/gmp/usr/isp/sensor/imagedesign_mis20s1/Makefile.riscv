@@ -1,0 +1,2 @@
+SRCS-y += mis20s1.c
+SRCS-y += mis20s1_ctrl.c

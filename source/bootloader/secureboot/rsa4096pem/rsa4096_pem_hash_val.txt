@@ -1,0 +1,12 @@
+4d5d0918e69c5f1f47f3297b49ebad2e67d1c769c6662ad4201ea9c8c19e7029 output/rsa_pub_4096.bin
+==================================================================================
+input_file: rsa4096pem/rsa_pub_4096_sha256.txt
+==================================================================================
+rootkey_hash[0]=mw 0x100a000c 0x18095d4d
+rootkey_hash[1]=mw 0x100a0010 0x1f5f9ce6
+rootkey_hash[2]=mw 0x100a0014 0x7b29f347
+rootkey_hash[3]=mw 0x100a0018 0x2eadeb49
+rootkey_hash[4]=mw 0x100a001c 0x69c7d167
+rootkey_hash[5]=mw 0x100a0020 0xd42a66c6
+rootkey_hash[6]=mw 0x100a0024 0xc8a91e20
+rootkey_hash[7]=mw 0x100a0028 0x29709ec1

@@ -1,0 +1,4 @@
+
+SRCS-y += gc8613.c
+SRCS-y += gc8613_ctrl.c
+

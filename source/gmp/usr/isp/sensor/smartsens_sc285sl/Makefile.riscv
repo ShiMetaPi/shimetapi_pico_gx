@@ -1,0 +1,3 @@
+
+SRCS-y += sc285sl.c
+SRCS-y += sc285sl_ctrl.c

@@ -1,0 +1,37 @@
+SRCS-y  :=
+TEMPS   :=
+
+sinclude $(CONFIG_FILE)
+sinclude $(TOPDIR)/$(SRCDIR)Makefile
+include $(TOPDIR)/scripts/Makefile.define
+
+# find all directory in SRCS-y
+SRCS-subdir := $(filter-out %.c %.S,$(SRCS-y))
+
+# find all file in SRCS-y
+SRCS-y := $(addprefix $(SRCDIR),$(SRCS-y) $(START) $(TAIL))
+
+# relative path
+LIBOBJS := $(O)$(SRCDIR)lib$(notdir $(SRCDIR:/=)).a
+LIB_SUBOBJS := $(wildcard $(foreach LIB,$(SRCS-subdir),$(SRCDIR)$(LIB)lib$(LIB:/=).a))
+
+AOBJS := $(addprefix $(O),$(subst .S,.o,$(filter %.S,$(SRCS-y))))
+ADEPS := $(AOBJS:.o=.d) $(START:.o=.d) $(TAIL:.o=.d)
+COBJS := $(addprefix $(O),$(subst .c,.o,$(filter %.c,$(SRCS-y))))
+CDEPS := $(COBJS:.o=.d)
+
+# all xxx.o, exclude start.o,libxxx.a
+OBJS  := $(strip $(AOBJS) $(COBJS))
+
+# all depend file, exclude libxxx.a
+DEPS := $(CDEPS) $(ADEPS)
+
+################################################################################
+
+clean: $(addsuffix .clean,$(LIB_SUBOBJS))
+	$(call show_cmd,clean,$(SRCDIR))
+	$(Q)$(RM) $(OBJS) $(DEPS) $(LIBOBJS) $(O)$(SRCDIR)$(MKDEP)
+
+$(addsuffix .clean,$(LIB_SUBOBJS)):
+	$(call show_cmd,ENTRY,$(TOPDIR)/$(@D))
+	$(Q)$(MAKE) $(CLFLAGS) SRCDIR="$(@D)/" O="$(O)" clean

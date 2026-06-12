@@ -1,0 +1,4 @@
+
+SRCS-y += gc5603.c
+SRCS-y += gc5603_ctrl.c
+

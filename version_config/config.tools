@@ -1,0 +1,36 @@
+config XMEDIA_UDEV_SUPPORT
+    bool "Udev Support"
+    default n
+
+config XMEDIA_DOSFS_SUPPORT
+    bool "Fat32 fsck Support"
+    default n
+
+config XMEDIA_E2FSPROGS_SUPPORT
+    bool "Ext3/Ext4 format Support"
+    default n
+
+config XMEDIA_GDB_SUPPORT
+    bool "GDB Support"
+	default n
+    help
+        Customers need to download the source package by themselves.
+        If not, choose this option will result in compile error. Please see the readme in source/rootfs/gdb.
+    default n
+
+config XMEDIA_MTDUTILS_SUPPORT
+    bool "Ubi/Jffs2 format Support"
+    default n
+
+config XMEDIA_REG_SUPPORT
+    bool "Read/Write Registers Support"
+    default n
+
+config XMEDIA_MIITOOLS_SUPPORT
+    bool "Mii ethphy Support"
+    default n
+
+config XMEDIA_CANTOOLS_SUPPORT
+    bool "CAN Tools Support"
+    default n
+

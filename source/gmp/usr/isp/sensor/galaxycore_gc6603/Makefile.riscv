@@ -1,0 +1,4 @@
+
+SRCS-y += gc6603.c
+SRCS-y += gc6603_ctrl.c
+

@@ -1,0 +1,15 @@
+if TARGET_XMFALCON
+
+# config SYS_BOARD
+#         default "xmfalcon"
+#
+# config SYS_VENDOR
+#         default "lotus"
+
+config SYS_SOC
+	default "xmfalcon"
+
+config SYS_CONFIG_NAME
+	default "xmfalcon"
+
+endif

@@ -1,0 +1,4 @@
+
+SRCS-y += sc485sl.c
+SRCS-y += sc485sl_ctrl.c
+

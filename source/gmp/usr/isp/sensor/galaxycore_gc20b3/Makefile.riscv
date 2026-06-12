@@ -1,0 +1,4 @@
+
+SRCS-y += gc20b3.c
+SRCS-y += gc20b3_ctrl.c
+

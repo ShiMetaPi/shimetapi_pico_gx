@@ -1,0 +1,4 @@
+
+SRCS-y += os08a20.c
+SRCS-y += os08a20_ctrl.c
+

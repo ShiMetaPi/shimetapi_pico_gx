@@ -1,0 +1,8 @@
+source "version_config/config.flash"
+
+menu "Boot Regfile Config"
+
+config XMEDIA_BOOT_REG_NAME
+    prompt "Boot Reg File"
+    string
+endmenu

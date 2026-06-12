@@ -1,0 +1,2 @@
+SRCS-y += os04j10.c
+SRCS-y += os04j10_ctrl.c

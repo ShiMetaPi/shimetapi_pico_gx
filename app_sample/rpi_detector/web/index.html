@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>rpi-detector - Motion Detector</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="page-glow glow-one"></div>
+<div class="page-glow glow-two"></div>
+
+<div class="container">
+    <header class="hero">
+        <div>
+            <p class="eyebrow">GK7206 Smart Vision</p>
+            <h1>rpi-detector</h1>
+            <span class="subtitle">摄像头预览与区域运动检测</span>
+        </div>
+        <div class="hero-badge">
+            <span class="badge-dot"></span>
+            Live Monitor
+        </div>
+    </header>
+
+    <div class="main-layout">
+        <div class="video-panel card">
+            <div class="panel-title-row">
+                <div>
+                    <p class="eyebrow">Camera</p>
+                    <h2>实时预览</h2>
+                </div>
+                <span class="status-pill">ROI 检测中</span>
+            </div>
+            <div class="stream-wrap" id="stream-wrap">
+                <img id="mjpeg-stream" src="" alt="MJPEG Stream">
+                <canvas id="motion-canvas" class="motion-canvas"></canvas>
+                <div id="roi-box" class="roi-box">
+                    <span class="roi-label">检测区域</span>
+                    <span class="roi-handle" data-handle="nw"></span>
+                    <span class="roi-handle" data-handle="ne"></span>
+                    <span class="roi-handle" data-handle="sw"></span>
+                    <span class="roi-handle" data-handle="se"></span>
+                </div>
+                <div id="stream-overlay" class="stream-overlay">正在连接实时画面...</div>
+            </div>
+            <div class="video-controls">
+                <button onclick="reloadStream()">重连画面</button>
+                <button class="secondary" onclick="resetRoi()">重置检测框</button>
+            </div>
+        </div>
+
+        <div class="control-panel card">
+            <div class="panel-title-row compact">
+                <div>
+                    <p class="eyebrow">Detection</p>
+                    <h2>检测状态</h2>
+                </div>
+            </div>
+
+            <div class="status-box highlight">
+                <h3>区域运动检测</h3>
+                <div class="metric-card primary-metric">
+                    <span>阈值</span>
+                    <strong><span id="threshold-value">20</span>%</strong>
+                </div>
+                <input type="range" id="motion-threshold" min="1" max="80" value="20" oninput="setThreshold(this.value)">
+                <p class="hint">阈值表示检测框内发生变化的画面占比。拖动方框可移动检测区域，拖动四角可缩放。</p>
+                <div class="metric-grid">
+                    <div class="metric-card">
+                        <span>当前变化</span>
+                        <strong><span id="motion-ratio">0.0</span>%</strong>
+                    </div>
+                    <div class="metric-card">
+                        <span>触发次数</span>
+                        <strong id="motion-count">0</strong>
+                    </div>
+                </div>
+                <button class="danger full-width" onclick="resetCounters()">重置警告和触发次数</button>
+            </div>
+
+            <div class="control-box">
+                <h3>最近告警</h3>
+                <div id="alerts-list" class="alerts-list">无告警</div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <span>GK7206 IPC SDK · Browser ROI Motion Detection</span>
+    </footer>
+</div>
+
+<script src="/app.js"></script>
+</body>
+</html>

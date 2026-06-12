@@ -1,0 +1,4 @@
+
+SRCS-y += sc533hai.c
+SRCS-y += sc533hai_ctrl.c
+

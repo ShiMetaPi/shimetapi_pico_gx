@@ -1,0 +1,3 @@
+
+SRCS-y += sc431hai.c
+SRCS-y += sc431hai_ctrl.c

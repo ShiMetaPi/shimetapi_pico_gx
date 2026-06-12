@@ -1,0 +1,11 @@
+baudrate=115200
+ethaddr=00:00:00:00:00:00
+ipaddr=192.168.1.10
+netmask=255.255.255.0
+gatewayip=192.168.1.1
+serverip=192.168.1.1
+bootcmd=xmediapp;sf probe 0;loadmcustage2;boothz 0x40FFFFC0 0x40208000 0x100000 0x600000
+bootargs=mem=32M console=ttyAMA0,115200 no_console_suspend loglevel=0 root=/dev/mtdblock4 rootfstype=jffs2 rw mtdparts=sfc:512K(boot),256K(bootargs),256K(ddr_param),6M(kernel),10M(rootfs) earlycon=pl011,mmio32,0x12040000 mmz_allocator=xmedia mmz=anonymous,0,0x42000000,96M fb_vram="gfbg:vram0_size:3600"
+stdin=serial
+stdout=serial
+stderr=serial

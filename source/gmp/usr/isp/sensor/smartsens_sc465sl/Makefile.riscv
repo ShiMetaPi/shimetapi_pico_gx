@@ -1,0 +1,4 @@
+
+SRCS-y += sc465sl.c
+SRCS-y += sc465sl_ctrl.c
+

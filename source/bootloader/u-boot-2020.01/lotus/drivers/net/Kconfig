@@ -1,0 +1,43 @@
+menuconfig LOTUS_ETH
+	bool "Ethernet Support"
+	default y
+
+if LOTUS_ETH
+
+choice
+    prompt "Ethernet select"
+    default NET_FEMAC
+
+config NET_FEMAC
+	bool "Fast Ethernet Controller"
+	help
+	  This driver supports Fast Ethernet controller.
+
+config FTGMAC030
+	bool "Ftgmac030 Ethernet Support"
+	help
+	  This driver supports Ftgmac030 Ethernet controller.
+
+endchoice
+
+if FTGMAC030
+choice
+    prompt "FTGMAC030 Soft Version"
+    default FTGMAC030_V1
+
+config FTGMAC030_V1
+	bool "v1.0"
+	help
+	  This driver supports Ftgmac030 Ethernet controller.
+
+config FTGMAC030_V2
+	bool "v2.0"
+	select PHYLIB
+	select MII
+	help
+	  This driver supports Ftgmac030 Ethernet controller.
+
+endchoice
+endif
+
+endif

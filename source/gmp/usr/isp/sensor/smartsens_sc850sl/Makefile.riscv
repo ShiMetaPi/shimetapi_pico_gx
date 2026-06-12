@@ -1,0 +1,4 @@
+
+SRCS-y += sc850sl.c
+SRCS-y += sc850sl_ctrl.c
+

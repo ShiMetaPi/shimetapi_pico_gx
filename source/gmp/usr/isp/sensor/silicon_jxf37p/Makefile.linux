@@ -1,0 +1,21 @@
+ISP_DIR := $(shell cd ../.. && /bin/pwd)
+SDK_DIR ?= $(shell cd $(ISP_DIR)/../../../.. && /bin/pwd)
+
+include $(SDK_DIR)/build/base.mk
+include $(ISP_DIR)/sensor/plat.mk
+
+LIB_NAME := libsns_jxf37p
+
+SRCS := $(wildcard *.c)
+
+SDK_USR_CFLAGS += -I$(GMP_DIR)/include
+SDK_USR_CFLAGS += -I$(GMP_DIR)/usr/include
+SDK_USR_CFLAGS += -I$(ISP_DIR)/include
+SDK_USR_CFLAGS += -I$(ISP_DIR)/../include
+SDK_USR_CFLAGS += -I.
+AT := @
+
+$(info SRCS=$(SRCS))
+
+include $(SDK_DIR)/build/sdk_lib_rules.mk
+

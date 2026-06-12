@@ -1,0 +1,3 @@
+
+SRCS-y += ov4689.c
+SRCS-y += ov4689_ctrl.c

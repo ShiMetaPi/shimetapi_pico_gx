@@ -1,0 +1,29 @@
+
+config FMC_SPI_NOR
+	bool "lotus SPI Nor Flash Interface support"
+	depends on FMC
+	help
+	  Enable the lotus SPI Nor flash support.
+
+	  If unsure, say N
+
+config SPI_BLOCK_PROTECT
+    bool "Spi Nor Device BP(Block Protect) Support"
+	depends on FMC_SPI_NOR
+    help
+      SFC supports BP(Block Protect) feature to preestablish a series
+      area to avoid writing and erasing, except to reading. With this macro
+      definition we can get the BP info which was setted before. The
+      BOTTOM/TOP bit is setted to BOTTOM, it means the lock area starts
+      from 0 address.
+
+	  If unsure, say N
+
+config DTR_MODE_SUPPORT
+    bool "Spi Nor Device DTR mode Support"
+	depends on FMC_SPI_NOR
+	default n
+    help
+	  To support DTR mode
+
+	  If unsure, say N

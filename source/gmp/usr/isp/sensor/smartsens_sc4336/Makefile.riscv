@@ -1,0 +1,4 @@
+
+SRCS-y += sc4336.c
+SRCS-y += sc4336_ctrl.c
+

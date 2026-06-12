@@ -1,0 +1,15 @@
+if TARGET_XMORCA
+
+# config SYS_BOARD
+#         default "xmorca"
+#
+# config SYS_VENDOR
+#         default "lotus"
+
+config SYS_SOC
+	default "xmorca"
+
+config SYS_CONFIG_NAME
+	default "xmorca"
+
+endif
