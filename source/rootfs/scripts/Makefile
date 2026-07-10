@@ -21,6 +21,9 @@ rt_notdir = $(if $(strip $(call rt_file,$(1))),\
     $(info *** $(CONFIG_XMEDIA_USR_ARM_TOOLCHAINS)-gcc $(SDK_USR_CFLAGS)) \
     $(error not found $(1), please check compiler and cflags))
 
+ifeq ($(filter clean,$(MAKECMDGOALS)),clean)
+RT-LIBS :=
+else
 # 兼容 uclibc(libc.so.0), glibc(libc.so.6), musllibc(libc.so)
 MUSL_LIBC=$(findstring musl, $(shell $(CONFIG_XMEDIA_USR_ARM_TOOLCHAINS)-gcc --version))
 RT-LIBS = $(if $(MUSL_LIBC),$(call rt_notdir,libc.so),\
@@ -28,6 +31,7 @@ RT-LIBS = $(if $(MUSL_LIBC),$(call rt_notdir,libc.so),\
 RT-LIBS += $(call rt_notdir,libgcc_s.so)
 ifeq ($(CONFIG_XMEDIA_LIBCPP_SUPPORT),y)
 RT-LIBS += $(call rt_notdir,libstdc++.so)
+endif
 endif
 
 rootfs_unstrip: $(ROOTFS_PREFIX)/etc/inittab \

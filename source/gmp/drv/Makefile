@@ -3,7 +3,6 @@ SDK_DIR := $(shell cd $(CURDIR)/../../.. && /bin/pwd)
 include $(SDK_DIR)/build/base.mk
 
 objects := osal lsadc misc ext
-objects += obj_$(OBJ_KERNEL_VERSION)/$(KERNEL_TOOLCHAIN)/$(OBJ_BUILD_TYPE)/$(OBJ_LOG_MODE)
 
 ifeq ($(XMEDIA_DRV_BUILDTYPE),y)
 objects += init
@@ -26,5 +25,6 @@ $(objects):
 	$(AT)$(MAKE) -C $@
 
 $(objects_clean):
-	$(AT)$(MAKE) -C $(patsubst %_clean, %, $@) clean
-
+	$(AT)if [ -d "$(patsubst %_clean, %, $@)" ]; then \
+		$(MAKE) -C $(patsubst %_clean, %, $@) clean; \
+	fi

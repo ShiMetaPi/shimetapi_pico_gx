@@ -19,9 +19,13 @@ rt_notdir = $(if $(strip $(call rt_file,$(1))),\
     $(info *** $(CONFIG_XMEDIA_ARM_TOOLCHAINS_NAME)-gcc $(SDK_USR_CFLAGS)) \
     $(error not found $(1), please check compiler and cflags))
 
+ifeq ($(filter clean,$(MAKECMDGOALS)),clean)
+RT-LIBS :=
+else
 # libc.so
 # RT-LIBS = $(call rt_notdir,libc.so) //拷贝c库会增加initrd的大小，toybox采用静态链接, 不需要动态c库，
 #                                       根据实际业务app需求来确定是否拷贝动态c库。
+endif
 
 initrd_unstrip: $(INITRD_PREFIX)/init \
     $(addprefix $(INITRD_PREFIX)/lib/,$(RT-LIBS))
@@ -38,4 +42,3 @@ $(INITRD_PREFIX)/lib/libc.so:
 		cp -avf $${DIR}/*.so $(@D)
 	cd $(@D);ln -s $(notdir $@) ld-musl-arm.so.1;chmod +x $@;cd -
 	cd $(@D);ln -s $(notdir $@) ld-uClibc.so.0;chmod +x $@;cd -
-
