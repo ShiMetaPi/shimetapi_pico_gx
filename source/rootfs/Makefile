@@ -61,3 +61,6 @@ include $(foreach utils,$(TOOLS.y),$(ROOTFS_SRCDIR)/$(utils)/Makefile)
 .PHONY: rootfs_post
 rootfs_post:
 	@rm -rf $(ROOTFS_PREFIX)/opt/sample
+ifneq ($(filter y,$(CONFIG_XM7206V11A) $(CONFIG_XM7206V12A)),)
+	@$(MAKE) -C $(SDK_DIR)/source/app/factory_test install
+endif
