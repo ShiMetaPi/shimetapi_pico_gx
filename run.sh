@@ -215,6 +215,8 @@ case "$CMD" in
     rootfs)
         echo "Building root filesystem... ($JOBS_DESC)"
         make -C "${SDK_DIR}" rootfs ${MAKE_J}
+        echo "Building filesystem images (jffs2/yaffs/ubifs/ext4)... ($JOBS_DESC)"
+        make -C "${SDK_DIR}" fs_image ${MAKE_J}
         ;;
 
     driver)
@@ -227,6 +229,7 @@ case "$CMD" in
         make -C "${SDK_DIR}" uboot ${MAKE_J}
         make -C "${SDK_DIR}" linux ${MAKE_J}
         make -C "${SDK_DIR}" rootfs ${MAKE_J}
+        make -C "${SDK_DIR}" fs_image ${MAKE_J}
         ;;
 
     osal)
@@ -259,6 +262,8 @@ case "$CMD" in
         make -C "${SDK_DIR}" clean
         sleep 1
         make -C "${SDK_DIR}" build ${MAKE_J}
+	source build/env.sh
+        make fs_image -j40
         ;;
 
     clean)
