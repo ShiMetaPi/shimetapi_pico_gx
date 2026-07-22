@@ -1,4 +1,4 @@
-SUBDIRS := face_recognize rpi_detector
+SUBDIRS := face_recognize rpi_detector camera_snap
 
 .PHONY: all clean $(SUBDIRS)
 
