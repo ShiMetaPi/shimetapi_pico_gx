@@ -215,6 +215,8 @@ case "$CMD" in
     rootfs)
         echo "Building root filesystem... ($JOBS_DESC)"
         make -C "${SDK_DIR}" rootfs ${MAKE_J}
+        echo "Building filesystem images (jffs2/yaffs/ubifs/ext4)... ($JOBS_DESC)"
+        make -C "${SDK_DIR}" fs_image ${MAKE_J}
         ;;
 
     driver)
@@ -227,6 +229,7 @@ case "$CMD" in
         make -C "${SDK_DIR}" uboot ${MAKE_J}
         make -C "${SDK_DIR}" linux ${MAKE_J}
         make -C "${SDK_DIR}" rootfs ${MAKE_J}
+        make -C "${SDK_DIR}" fs_image ${MAKE_J}
         ;;
 
     osal)
@@ -258,7 +261,21 @@ case "$CMD" in
         echo "Building all components... ($JOBS_DESC)"
         make -C "${SDK_DIR}" clean
         sleep 1
+        # build 可能因个别目标失败而返回非零(常见: sample/npu/demo_ai 缺第三方库
+        # ffmpeg/cJSON/sqlite3)。但 fs_image(产出 jffs2/squashfs 等镜像)绝不能因此被跳过
+        # —— 在 set -e 下这里临时关闭退出,捕获 build 的返回码,确保后续 fs_image 必跑。
+        set +e
         make -C "${SDK_DIR}" build ${MAKE_J}
+        BUILD_RET=$?
+        set -e
+        if [ ${BUILD_RET} -ne 0 ]; then
+            echo ""
+            echo "⚠ 'make build' 返回非零(${BUILD_RET}),有目标失败(例如 sample/demo_ai 链接错误)。"
+            echo "  不阻断流程,继续强制生成文件系统镜像(fs_image)..."
+            echo ""
+        fi
+	source build/env.sh
+        make fs_image -j40
         ;;
 
     clean)
