@@ -1,0 +1,10 @@
+reg_max=16
+strides=8,16,32
+input_order=rgb
+nms_iou=0.45
+nms_conf=0.25
+mean=0.0,0.0,0.0
+std=1.0,1.0,1.0
+nc=3
+model_base=yolov8n
+dtype=float32

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>石头剪刀布 - YOLOv8</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>✊ 石头剪刀布</h1>
+        <span class="subtitle">YOLOv8 实时手势检测</span>
+    </header>
+    <div class="main-layout">
+        <div class="video-panel">
+            <h2>实时画面</h2>
+            <div class="video-wrapper">
+                <img id="mjpeg-stream" src="/mjpeg" alt="Gesture Stream">
+                <canvas id="bbox-overlay"></canvas>
+            </div>
+            <div class="video-controls">
+                <button onclick="startGame()">🎮 开始对战</button>
+                <span class="info" id="fps-info">FPS: --</span>
+            </div>
+        </div>
+        <div class="control-panel">
+            <h2>游戏面板</h2>
+            <div class="status-box">
+                <h3>当前检测</h3>
+                <div id="gesture-info">等待检测...</div>
+            </div>
+            <div class="status-box highlight">
+                <h3>对战结果</h3>
+                <div id="game-result">点击"开始对战"</div>
+            </div>
+            <div class="control-box">
+                <h3>计分板</h3>
+                <div id="score-info">玩家: 0 | 电脑: 0</div>
+            </div>
+            <div class="control-box">
+                <h3>检测列表</h3>
+                <div id="det-list" style="max-height:150px;overflow-y:auto;font-size:0.85em;">无检测</div>
+            </div>
+        </div>
+    </div>
+    <footer><span>GK7206 NPU - YOLOv8 Object Detection</span></footer>
+</div>
+<script src="/app.js"></script>
+</body>
+</html>
