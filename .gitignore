@@ -12,6 +12,9 @@ sample/**
 !sample/**/*.conf
 !sample/**/*.ini
 !sample/**/*.cfg
+# demo_ai 第三方预编译库(ffmpeg/cjson/SQLite):放行静态库与 pkg-config 文件入库
+!sample/npu/demo_ai/**/*.a
+!sample/npu/demo_ai/**/*.pc
 
 out/
 source/gmp/usr/dump_tools/vi_bayer_dump

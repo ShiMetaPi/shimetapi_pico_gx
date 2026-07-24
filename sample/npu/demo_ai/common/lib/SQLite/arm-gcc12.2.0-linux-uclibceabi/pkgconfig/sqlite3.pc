@@ -1,0 +1,13 @@
+# Package Information for pkg-config
+
+prefix=/home/liuyan/ipc_workspace/7206/0522/xcam/open_source/SQLite/0524/sqlite-src-3490200/
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: SQLite
+Description: SQL database engine
+Version: 3.49.2
+Libs: -L${libdir} -lsqlite3
+Libs.private:   
+Cflags: -I${includedir}
