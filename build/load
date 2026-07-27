@@ -30,9 +30,9 @@ pre_mem_info()
     elif [[ "$CHIP_TYPE" == "xm7206v12a" ]];then
         mem_total=256                # total mem
         mem_start=0x40000000         # phy mem start
-        os_mem_size=32               # os mem
-        mmz_start=0x42000000;        # mmz start addr
-        mmz_size=224M;               # mmz size
+        os_mem_size=96               # os mem
+        mmz_start=0x46000000;        # mmz start addr
+        mmz_size=160M;               # mmz size
     else
         mem_total=64                 # total mem
         mem_start=0x40000000         # phy mem start
