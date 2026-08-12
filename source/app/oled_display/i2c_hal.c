@@ -1,0 +1,87 @@
+/*
+ * i2c_hal.c - 用户态 I2C 读写封装实现。
+ *
+ * 用 I2C_RDWR 复合事务（每条 i2c_msg 自带从地址），不依赖 I2C_SLAVE 预绑定，
+ * 是 Linux 用户态访问 I2C 外设的标准、可移植写法。
+ */
+#include "i2c_hal.h"
+
+#include <stdio.h>
+#include <string.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <errno.h>
+#include <sys/ioctl.h>
+#include <linux/i2c.h>
+#include <linux/i2c-dev.h>
+
+int i2c_hal_open(int bus, uint8_t addr)
+{
+    char path[32];
+
+    snprintf(path, sizeof(path), "/dev/i2c-%d", bus);
+    int fd = open(path, O_RDWR);
+    if (fd < 0) {
+        fprintf(stderr, "[i2c] open %s failed: %s\n", path, strerror(errno));
+        return -1;
+    }
+    if (addr != 0) {
+        /* I2C_SLAVE 预绑定；即使失败也无妨，I2C_RDWR 自带 addr 仍可用。 */
+        if (ioctl(fd, I2C_SLAVE, addr) < 0) {
+            fprintf(stderr, "[i2c] I2C_SLAVE(0x%02x) warn: %s\n", addr, strerror(errno));
+        }
+    }
+    return fd;
+}
+
+int i2c_hal_write(int fd, uint8_t addr, const uint8_t *data, int len)
+{
+    struct i2c_msg msg;
+    struct i2c_rdwr_ioctl_data ioctl_data;
+
+    if (fd < 0 || len <= 0) {
+        return -1;
+    }
+
+    msg.addr = addr;
+    msg.flags = 0;
+    msg.len = len;
+    msg.buf = (uint8_t *)data; /* i2c_msg.buf 非常量，这里去掉 const（不改写） */
+
+    ioctl_data.msgs = &msg;
+    ioctl_data.nmsgs = 1;
+
+    if (ioctl(fd, I2C_RDWR, &ioctl_data) < 0) {
+        fprintf(stderr, "[i2c] write(addr=0x%02x, len=%d) failed: %s\n",
+                addr, len, strerror(errno));
+        return -1;
+    }
+    return 0;
+}
+
+int i2c_hal_probe(int fd, uint8_t addr)
+{
+    struct i2c_msg msg;
+    struct i2c_rdwr_ioctl_data ioctl_data;
+
+    if (fd < 0) {
+        return 0;
+    }
+    /* 零长度写：完成即有 ACK。部分控制器不支持零长度，则视为探测失败。 */
+    msg.addr = addr;
+    msg.flags = 0;
+    msg.len = 0;
+    msg.buf = NULL;
+
+    ioctl_data.msgs = &msg;
+    ioctl_data.nmsgs = 1;
+
+    return ioctl(fd, I2C_RDWR, &ioctl_data) < 0 ? 0 : 1;
+}
+
+void i2c_hal_close(int fd)
+{
+    if (fd >= 0) {
+        close(fd);
+    }
+}
