@@ -1,0 +1,14 @@
+#!/bin/sh
+
+chmod +x /opt/ko/load
+cd /opt/ko
+
+# chip_type 由 SDK build 时 rootfs_post 阶段根据 CONFIG_XMEDIA_CHIP_TYPE 写入 /etc/chip_type
+# 这里动态读取，v11a / v12a / v11at 都按对应参数加载 ko
+CHIP_TYPE="$(cat /etc/chip_type 2>/dev/null)"
+if [ -z "$CHIP_TYPE" ]; then
+    # 兜底：兼容 /etc/chip_type 缺失的旧 rootfs
+    CHIP_TYPE=xm7206v12a
+fi
+
+./load "$CHIP_TYPE" -i

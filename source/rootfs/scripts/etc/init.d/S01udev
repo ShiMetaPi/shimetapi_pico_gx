@@ -1,0 +1,20 @@
+#!/bin/sh
+
+mkdir /dev/pts
+mount -t devpts devpts /dev/pts
+
+mkdir -p /dev/snd
+
+if [ -f /sbin/udevd ]; then
+	mkdir -p /dev/.udev
+	test -d /run/udev || mkdir -p /run/udev
+	mount -t tmpfs tmpfs /run/udev
+	udevd --daemon
+	udevadm trigger
+elif [ -f /sbin/mdev ]; then
+	echo /sbin/mdev >/proc/sys/kernel/hotplug
+	mdev -s
+else
+	echo "No hotplug daemon!"
+fi
+

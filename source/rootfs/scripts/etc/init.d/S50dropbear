@@ -1,0 +1,15 @@
+#!/bin/sh
+
+DROPBEAR=/usr/sbin/dropbear
+DROPBEAR_DIR=/etc/dropbear
+
+if [ ! -x "$DROPBEAR" ]; then
+	echo "[SSH]: dropbear not found"
+	exit 0
+fi
+
+mkdir -p "$DROPBEAR_DIR"
+
+echo "[SSH]: start dropbear"
+
+/usr/sbin/dropbear -R -B -p 22

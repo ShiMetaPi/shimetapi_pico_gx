@@ -1,0 +1,85 @@
+#!/bin/sh
+
+# DHCP_IFACE 可以在外部指定要配置的网口，例如 DHCP_IFACE=eth1。
+# 如果外部没有设置 DHCP_IFACE，则默认使用 eth0。
+IFACE=${DHCP_IFACE:-eth0}
+
+# udhcpc 获取到 DHCP 地址后会调用这个脚本。
+# 该脚本负责真正配置 IP、子网掩码、默认网关和 DNS。
+UDHCPC_SCRIPT=/usr/share/udhcpc/default.script
+
+# 打印网络初始化信息，方便串口日志中确认脚本已经执行。
+printf '[NET]: init %s\n' "$IFACE"
+
+# ===== MAC 地址持久化 =====
+# 本平台设备树中 MAC 地址为全 0，内核每次启动会随机生成一个 MAC 地址。
+# 这会导致路由器（DHCP 服务器）认为是不同设备，每次分配不同 IP。
+# 这里把首次启动的 MAC 地址保存到 rootfs，后续启动恢复同一个 MAC，
+# 从而保证 DHCP 分配的 IP 稳定不变。
+MAC_FILE=/etc/.mac_addr
+if [ -f "$MAC_FILE" ]; then
+	SAVED_MAC=$(cat "$MAC_FILE")
+	# 恢复上次保存的 MAC 地址（网卡此时是 down 状态，可直接设置）
+	ifconfig "$IFACE" hw ether "$SAVED_MAC"
+	printf '[NET]: restored MAC %s\n' "$SAVED_MAC"
+fi
+
+# 启用指定网口。网口必须先 up，后面才能检测链路并发起 DHCP 请求。
+ifconfig "$IFACE" up
+
+# 如果是首次启动（没有保存过 MAC），保存当前随机生成的 MAC，供下次使用。
+if [ ! -f "$MAC_FILE" ]; then
+	CURRENT_MAC=$(cat /sys/class/net/$IFACE/address)
+	echo "$CURRENT_MAC" > "$MAC_FILE"
+	printf '[NET]: saved MAC %s\n' "$CURRENT_MAC"
+fi
+
+# 停掉系统中已有的 udhcpc 进程，避免重复启动多个 DHCP 客户端。
+# 2>/dev/null 用于屏蔽“没有找到进程”等错误提示。
+killall udhcpc 2>/dev/null
+
+# 最多等待 10 秒网线插入或链路建立。
+# /sys/class/net/$IFACE/carrier 为 1 表示网口 link up，为 0 表示 link down。
+cnt=0
+while [ "$cnt" -lt 10 ]; do
+	if [ -e "/sys/class/net/$IFACE/carrier" ]; then
+		if [ "$(cat "/sys/class/net/$IFACE/carrier" 2>/dev/null)" = "1" ]; then
+			printf '[NET]: %s link up\n' "$IFACE"
+			break
+		fi
+	fi
+	sleep 1
+	cnt=$((cnt + 1))
+done
+
+# 开始向局域网中的 DHCP 服务器，例如路由器，请求动态 IP 地址。
+# 如果存在上次保存的 DHCP 租约记录，则尝试请求同一个 IP，
+# 这样在同一局域网中即使板子重新上电也能保持 IP 不变。
+# 如果该 IP 已被其他设备占用或换了网络，路由器会自动分配新 IP。
+LEASE_FILE=/etc/.dhcp_lease
+UDHCPC_OPTS="-i $IFACE -b -q -s $UDHCPC_SCRIPT"
+
+if [ -f "$LEASE_FILE" ]; then
+	# 从租约文件中提取上次的 IP 和网关
+	SAVED_IP=$(grep '^ip=' "$LEASE_FILE" | cut -d= -f2)
+	SAVED_ROUTER=$(grep '^router=' "$LEASE_FILE" | cut -d= -f2)
+
+	if [ -n "$SAVED_IP" ]; then
+		printf '[NET]: last lease: ip=%s router=%s\n' "$SAVED_IP" "$SAVED_ROUTER"
+		printf '[NET]: requesting same IP %s via DHCP\n' "$SAVED_IP"
+		# -r <ip> 向 DHCP 服务器请求指定的 IP 地址
+		UDHCPC_OPTS="$UDHCPC_OPTS -r $SAVED_IP"
+	else
+		printf '[NET]: request DHCP on %s\n' "$IFACE"
+	fi
+else
+	printf '[NET]: request DHCP on %s (no previous lease)\n' "$IFACE"
+fi
+
+# 启动 BusyBox 的 DHCP 客户端 udhcpc。
+# -i 指定网口。
+# -b 如果当前拿不到 IP，则转入后台继续尝试。
+# -q 获取到租约后退出前台流程，适合启动脚本使用。
+# -s 指定 DHCP 回调脚本，用于配置 IP、路由和 DNS。
+# -r <ip> 请求上次获得的 IP（如果有的话）。
+udhcpc $UDHCPC_OPTS
