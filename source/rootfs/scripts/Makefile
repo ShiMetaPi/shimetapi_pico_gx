@@ -40,7 +40,17 @@ rootfs_unstrip: $(ROOTFS_PREFIX)/etc/inittab \
 $(ROOTFS_PREFIX)/etc/inittab:
 	$(call mkdir,$(@D))
 	tar xzf $(ROOTFS_SRCDIR)/scripts/rootfs.tgz -C $(ROOTFS_PREFIX)/..
-	touch $@
+	@echo "[scripts] rootfs.tgz 解压完成, 重新覆盖 busybox(WGET)..."
+	@# rootfs.tgz 是 baked-in 骨架, 里面的 bin/busybox 是老版本无 wget 的 busybox。
+	@# 这里把 busybox-1.36.1 build 出来的新 busybox 覆盖回去, 并重新建好 /usr/bin/wget 等软链。
+	-@cp -af $(ROOTFS_BUILDDIR)/busybox-1.36.1/.install/bin/busybox $(ROOTFS_PREFIX)/bin/busybox
+	-@cd $(ROOTFS_PREFIX)/bin && for lnk in $$(ls -la $(ROOTFS_BUILDDIR)/busybox-1.36.1/.install/bin/ 2>/dev/null | awk '/^l/{print $$NF}' | grep -v '^busybox$$'); do \
+	    [ -n "$$lnk" ] && ln -sf busybox "$$lnk" || true; \
+	done
+	-@cd $(ROOTFS_PREFIX)/usr/bin && for lnk in $$(ls -la $(ROOTFS_BUILDDIR)/busybox-1.36.1/.install/usr/bin/ 2>/dev/null | awk '/^l/{print $$NF}'); do \
+	    [ -n "$$lnk" ] && ln -sf ../../bin/busybox "$$lnk" || true; \
+	done
+	@touch $@
 
 # To compatible with old dynamic lib linked with uClibc, create a link ld-uClibc.so.0.
 $(ROOTFS_PREFIX)/lib/libc.so:
