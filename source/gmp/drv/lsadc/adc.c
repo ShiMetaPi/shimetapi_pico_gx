@@ -35,7 +35,11 @@
 #define LSADC_ENABLE       0x3C
 
 #define LSADC_MAX_CHN_NUM       3
-#define LSADC_NUM_BITS          10
+/* xmorca LSADC 实际是 12-bit。证据：ACTBIT 寄存器 mask 0xFFF (bits [11:0]) 见
+ * lsadc_model_select 内的 ACTBIT 写入注释；CHNDATA idle 满量程 = 4095 = 2^12-1。
+ * 旧值 10 是写错的（很可能是从老 SDK 抄过来没改），本宏当前未被代码引用，
+ * 仅作文档说明——后续 sample/app 不要按 10-bit 解读 raw。 */
+#define LSADC_NUM_BITS          12
 #define LSADC_ALL_CHN_INT_MASK  0xF
 
 #define LSADC_ACTIVE_BIT        (0xfff)

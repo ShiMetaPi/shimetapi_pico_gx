@@ -119,7 +119,16 @@
 		compatible = "rohm,dh2228fv";
 		reg = <0>;
 		pl022,interface = <0>;
-		pl022,com-mode = <0>;
+		/* pl022,com-mode：0=INTERRUPT, 1=POLLING, 2=DMA（enum ssp_mode, pl022.h）。
+		 * 2026-07-28 改 <0>→<1>：原 INTERRUPT 模式刷 ST7789 整帧(115KB RGB565)大数据时
+		 * 永久卡死。真因——lotus PL022 中断完成要求 rx 收到 rx_end 才让 spi_sync 返回，
+		 * 而 RX 尾巴不足水位线时只能靠接收超时中断 RTIM，该中断在本 SoC 上"被驱动判为
+		 * 不可信而丢弃"(spi-pl022.c:1600-1604)，且整条中断路径无完成超时 → spi_sync
+		 * 不可中断地永久等待，Ctrl+C 杀不掉。POLLING 模式 do_polling_transfer 死循环每轮
+		 * readwriter 把 RX 排空(RNE 即读)，不依赖 RXIM/RTIM，必然完成，且有 1s 超时兜底
+		 * (超时返回 -EAGAIN 而非挂死)。代价：传输期 CPU 忙等，可调高 spi-max-frequency 补偿。
+		 * 注：bus0/bus1 未接 SPI 屏，仍保留 <0>。详见 source/app/spi_display。 */
+		pl022,com-mode = <1>;
 #ifdef CONFIG_FPGA_SUPPORT
 		spi-max-frequency = <28000000>;
 #else
