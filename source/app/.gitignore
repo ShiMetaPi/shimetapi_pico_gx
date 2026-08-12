@@ -1,0 +1,21 @@
+# 编译产物 / build artifacts
+*.o
+*.pyc
+__pycache__/
+
+# 各例程 Makefile 编译出的 ARM ELF 可执行文件(无扩展名, 不可入库)
+# 注意: 不能用"忽略所有无扩展名文件", 会误伤 Makefile, 故逐个列出。
+/adc_display/adc_display
+/buzzer/buzzer
+/gas_sensor/gas_sensor
+/gpio_toggle/gpio
+/gpio_toggle/gpio_toggle
+/gps_display/gps_display
+/motor/motor
+/mpu6050_display/mpu6050_display
+/oled_display/oled_display
+/servo_ctrl/servo_ctrl
+/sht20_display/sht20_display
+/sonic_display/sonic_display
+/spi_display/spi_display
+/spo2_sensor/spo2_sensor
