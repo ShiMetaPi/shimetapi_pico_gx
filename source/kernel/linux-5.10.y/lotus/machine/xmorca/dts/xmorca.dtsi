@@ -475,7 +475,7 @@
 				phy-names = "usb2-phy";
 				phy_type = "utmi_wide";
 				maximum-speed = "high-speed";
-				dr_mode = "host";
+				dr_mode = "peripheral";
 				eps_directions = <0x6a>;
 				snps,eps_new_init;
 				eps_map=<0x0 0x1 0x2 0x3 0x4 0x5 0x7>;

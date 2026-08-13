@@ -455,6 +455,49 @@ int find_frame(int* fmt_index, int* frm_index, int* fcc, struct uvc_frame_info* 
 
 
 
+/* 2026-08-13 fallback：conf 找不到/没 fmt 行时，用 SDK 内置默认 fmt 列表，
+ * 对齐 sample/uvc_app/uvc_app.conf 默认值，避免 host 端找不到任何 frame。 */
+static void load_default_formats(void)
+{
+    struct uvc_frame_info fi;
+
+    /* yuyv 640x360@30, 1280x720@13 */
+    add_format(&g_formats_list_head, V4L2_PIX_FMT_YUYV);
+    fi.width = 640;  fi.height = 360;  fi.intervals[0] = frame_interval(30);
+    add_frame(&g_formats_list_head, V4L2_PIX_FMT_YUYV, fi);
+    fi.width = 1280; fi.height = 720;  fi.intervals[0] = frame_interval(13);
+    add_frame(&g_formats_list_head, V4L2_PIX_FMT_YUYV, fi);
+
+    /* nv21 640x360@30, 1280x720@13, 1920x1080@30 */
+    add_format(&g_formats_list_head, V4L2_PIX_FMT_NV21);
+    fi.width = 640;  fi.height = 360;  fi.intervals[0] = frame_interval(30);
+    add_frame(&g_formats_list_head, V4L2_PIX_FMT_NV21, fi);
+    fi.width = 1280; fi.height = 720;  fi.intervals[0] = frame_interval(13);
+    add_frame(&g_formats_list_head, V4L2_PIX_FMT_NV21, fi);
+    fi.width = 1920; fi.height = 1080; fi.intervals[0] = frame_interval(30);
+    add_frame(&g_formats_list_head, V4L2_PIX_FMT_NV21, fi);
+
+    /* mjpeg 640x360@30, 1280x720@30, 1920x1080@30 */
+    add_format(&g_formats_list_head, V4L2_PIX_FMT_MJPEG);
+    fi.width = 640;  fi.height = 360;  fi.intervals[0] = frame_interval(30);
+    add_frame(&g_formats_list_head, V4L2_PIX_FMT_MJPEG, fi);
+    fi.width = 1280; fi.height = 720;  fi.intervals[0] = frame_interval(30);
+    add_frame(&g_formats_list_head, V4L2_PIX_FMT_MJPEG, fi);
+    fi.width = 1920; fi.height = 1080; fi.intervals[0] = frame_interval(30);
+    add_frame(&g_formats_list_head, V4L2_PIX_FMT_MJPEG, fi);
+
+    /* h264 640x360@30, 1280x720@30, 1920x1080@30 */
+    add_format(&g_formats_list_head, V4L2_PIX_FMT_H264);
+    fi.width = 640;  fi.height = 360;  fi.intervals[0] = frame_interval(30);
+    add_frame(&g_formats_list_head, V4L2_PIX_FMT_H264, fi);
+    fi.width = 1280; fi.height = 720;  fi.intervals[0] = frame_interval(30);
+    add_frame(&g_formats_list_head, V4L2_PIX_FMT_H264, fi);
+    fi.width = 1920; fi.height = 1080; fi.intervals[0] = frame_interval(30);
+    add_frame(&g_formats_list_head, V4L2_PIX_FMT_H264, fi);
+
+    show_formats_info();
+}
+
 void uvc_formats_init(void)
 {
     int i, ret;
@@ -467,6 +510,12 @@ void uvc_formats_init(void)
         snprintf(key, sizeof(key), "fmt%d", i);
         ret = init_format(key);
     } while (ret == 0);
+
+    /* conf 没读到任何 fmt → 用 SDK 内置默认列表兜底 */
+    if (g_formats_list_head.row == NULL) {
+        uvc_logw("No fmt loaded from config, fall back to built-in defaults.\n");
+        load_default_formats();
+    }
 }
 
 void uvc_formats_deinit(void)

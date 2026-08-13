@@ -2,6 +2,9 @@
 
 /bin/mount -a
 
+# 2026-08-13 USB Gadget configfs 自动挂载，UVC/UAC1 摄像头例程依赖
+[ -d /sys/kernel/config/usb_gadget ] || mount -t configfs none /sys/kernel/config 2>/dev/null
+
 for initscript in /etc/init.d/S[0-9][0-9]*
 do
 	if [ -x $initscript ] ;
