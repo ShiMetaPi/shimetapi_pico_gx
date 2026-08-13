@@ -11,6 +11,7 @@
 #include <errno.h>
 #include <unistd.h>
 #include <signal.h>
+#include <libgen.h>
 
 #include "sample_comm.h"
 #include "sample_comm_sys.h"
@@ -26,6 +27,30 @@ static sample_comm_sensor_type sample_venc_sensor_type[MAX_SENSOR_NUM] = {
 };
 static xmedia_bool g_force_exit = XMEDIA_FALSE;
 extern xmedia_bool g_user_start;
+
+/* ----- runtime save path: 跟着 sample_venc 二进制所在的目录走 -----
+ * 之前硬编码 /sd_card 在本 SDK 板端（mmcblk1p1 挂在 /mnt，/sd_card 不存在），
+ * 现在用 readlink("/proc/self/exe") + dirname() 自动取二进制所在目录。
+ * 失败回落到 cwd，再不行就 "."。
+ */
+static char g_save_dir[256] = ".";
+
+static void resolve_save_dir(void)
+{
+    char self_path[256];
+    ssize_t n = readlink("/proc/self/exe", self_path, sizeof(self_path) - 1);
+    if (n > 0) {
+        self_path[n] = '\0';
+        char *d = dirname(self_path);
+        if (d != NULL && d[0] != '\0') {
+            snprintf(g_save_dir, sizeof(g_save_dir), "%s", d);
+            return;
+        }
+    }
+    if (getcwd(g_save_dir, sizeof(g_save_dir)) == NULL) {
+        snprintf(g_save_dir, sizeof(g_save_dir), ".");
+    }
+}
 
 xmedia_void sample_venc_usage(xmedia_char* args)
 {
@@ -461,7 +486,9 @@ xmedia_s32 sample_venc_ring()
         goto exit7;
     }
 
-    ret = sample_comm_venc_start_get_stream(venc_chn, venc_chn_cnt - 1, XMEDIA_TRUE, XMEDIA_FALSE, ".");
+    printf("[venc] save path = %s (auto: readlink /proc/self/exe)\n", g_save_dir);
+    ret = sample_comm_venc_start_get_stream(venc_chn, venc_chn_cnt - 1, XMEDIA_TRUE, XMEDIA_FALSE, g_save_dir);
+    // ret = sample_comm_venc_start_get_stream(venc_chn, venc_chn_cnt - 1, XMEDIA_TRUE, XMEDIA_FALSE, "."); // orig: cwd on readonly rootfs -> fopen fail
     if (ret != XMEDIA_SUCCESS) {
         SAMPLE_PRT("venc start get stream failed !\n");
         goto exit8;
@@ -476,7 +503,9 @@ xmedia_s32 sample_venc_ring()
             continue;
         }
 
-        ret = sample_comm_venc_capture_jpeg(venc_chn[2], 1, XMEDIA_TRUE, XMEDIA_FALSE, ".");
+        printf("[venc] capture jpeg save path = %s (auto: readlink /proc/self/exe)\n", g_save_dir);
+        ret = sample_comm_venc_capture_jpeg(venc_chn[2], 1, XMEDIA_TRUE, XMEDIA_FALSE, g_save_dir);
+        // ret = sample_comm_venc_capture_jpeg(venc_chn[2], 1, XMEDIA_TRUE, XMEDIA_FALSE, "."); // orig: cwd on readonly rootfs -> fopen fail
         if (ret != XMEDIA_SUCCESS) {
             SAMPLE_PRT("capture jpeg failed!\n");
             break;
@@ -736,7 +765,9 @@ xmedia_s32 sample_venc_h265_h264(xmedia_bool set_roi)
         goto exit6;
     }
 
-    ret = sample_comm_venc_start_get_stream(venc_chn, venc_chn_cnt, XMEDIA_TRUE, XMEDIA_FALSE, ".");
+    printf("[venc] save path = %s (auto: readlink /proc/self/exe)\n", g_save_dir);
+    ret = sample_comm_venc_start_get_stream(venc_chn, venc_chn_cnt, XMEDIA_TRUE, XMEDIA_FALSE, g_save_dir);
+    // ret = sample_comm_venc_start_get_stream(venc_chn, venc_chn_cnt, XMEDIA_TRUE, XMEDIA_FALSE, "."); // orig: cwd on readonly rootfs -> fopen fail
     if (ret != XMEDIA_SUCCESS) {
         SAMPLE_PRT("venc start get stream failed !\n");
         goto exit7;
@@ -978,7 +1009,9 @@ xmedia_s32 sample_venc_qpmap()
         goto exit4;
     }
 
-    ret = sample_comm_venc_start_get_stream(venc_chn, venc_chn_cnt, XMEDIA_TRUE, XMEDIA_FALSE, ".");
+    printf("[venc] save path = %s (auto: readlink /proc/self/exe)\n", g_save_dir);
+    ret = sample_comm_venc_start_get_stream(venc_chn, venc_chn_cnt, XMEDIA_TRUE, XMEDIA_FALSE, g_save_dir);
+    // ret = sample_comm_venc_start_get_stream(venc_chn, venc_chn_cnt, XMEDIA_TRUE, XMEDIA_FALSE, "."); // orig: cwd on readonly rootfs -> fopen fail
     if (ret != XMEDIA_SUCCESS) {
         SAMPLE_PRT("venc start get stream failed !\n");
         goto exit5;
@@ -1236,7 +1269,9 @@ xmedia_s32 sample_venc_jpeg()
         goto exit6;
     }
 
-    ret = sample_comm_venc_start_get_stream(&venc_chn[1], venc_chn_cnt - 1, XMEDIA_TRUE, XMEDIA_FALSE, ".");
+    printf("[venc] save path = %s (auto: readlink /proc/self/exe)\n", g_save_dir);
+    ret = sample_comm_venc_start_get_stream(&venc_chn[1], venc_chn_cnt - 1, XMEDIA_TRUE, XMEDIA_FALSE, g_save_dir);
+    // ret = sample_comm_venc_start_get_stream(&venc_chn[1], venc_chn_cnt - 1, XMEDIA_TRUE, XMEDIA_FALSE, "."); // orig: cwd on readonly rootfs -> fopen fail
     if (ret != XMEDIA_SUCCESS) {
         SAMPLE_PRT("venc start get stream failed !\n");
         goto exit7;
@@ -1257,7 +1292,9 @@ xmedia_s32 sample_venc_jpeg()
             continue;
         }
 
-        ret = sample_comm_venc_capture_jpeg(venc_chn[0], 1, XMEDIA_TRUE, support_dcf, ".");
+        printf("[venc] capture jpeg save path = %s (auto: readlink /proc/self/exe)\n", g_save_dir);
+        ret = sample_comm_venc_capture_jpeg(venc_chn[0], 1, XMEDIA_TRUE, support_dcf, g_save_dir);
+        // ret = sample_comm_venc_capture_jpeg(venc_chn[0], 1, XMEDIA_TRUE, support_dcf, "."); // orig: cwd on readonly rootfs -> fopen fail
         if (ret != XMEDIA_SUCCESS) {
             SAMPLE_PRT("capture jpeg failed!\n");
             break;
@@ -1541,7 +1578,9 @@ xmedia_s32 sample_venc_jpeg_splicing()
         splicing_para.vpss_pipe = vpss_pipe;
         splicing_para.venc_chn = venc_chn[0];
         splicing_para.vpss_chn = vpss_ochn[0];
-        snprintf(splicing_para.save_path, sizeof(splicing_para.save_path), ".");
+        printf("[venc] splicing save path = %s (auto: readlink /proc/self/exe)\n", g_save_dir);
+        snprintf(splicing_para.save_path, sizeof(splicing_para.save_path), g_save_dir);
+        // snprintf(splicing_para.save_path, sizeof(splicing_para.save_path), "."); // orig: cwd on readonly rootfs -> fopen fail
         ret = sample_comm_venc_splicing_proc(&splicing_para);
         if (ret != XMEDIA_SUCCESS) {
             SAMPLE_PRT("capture jpeg failed!\n");
@@ -1669,7 +1708,9 @@ xmedia_s32 sample_venc_only(xmedia_video_size res, xmedia_payload_type payload_t
         yuv_thread_para.max_send_yuv_cnt = 30; // for jpeg only send 30 frame
     }
     sample_comm_venc_start_chn(venc_chnl);
-    ret = sample_comm_venc_start_get_stream(&venc_chnl, venc_chn_cnt, XMEDIA_TRUE, XMEDIA_TRUE, ".");
+    printf("[venc] save path = %s (auto: readlink /proc/self/exe)\n", g_save_dir);
+    ret = sample_comm_venc_start_get_stream(&venc_chnl, venc_chn_cnt, XMEDIA_TRUE, XMEDIA_TRUE, g_save_dir);
+    // ret = sample_comm_venc_start_get_stream(&venc_chnl, venc_chn_cnt, XMEDIA_TRUE, XMEDIA_TRUE, "."); // orig: cwd on readonly rootfs -> fopen fail
     if (ret != XMEDIA_SUCCESS) {
         SAMPLE_PRT("venc start get stream failed !\n");
         goto exit3;
@@ -1698,6 +1739,9 @@ int main(int argc,char **argv)
 
     signal(SIGINT, sample_venc_handle_sig);
     signal(SIGTERM, sample_venc_handle_sig);
+
+    resolve_save_dir();
+    printf("[venc] runtime save dir = %s (auto: readlink /proc/self/exe + dirname)\n", g_save_dir);
 
     if (argc < 2) {
         sample_venc_usage(argv[0]);
