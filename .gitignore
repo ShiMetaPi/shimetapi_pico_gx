@@ -15,6 +15,8 @@ sample/**
 # demo_ai 第三方预编译库(ffmpeg/cjson/SQLite):放行静态库与 pkg-config 文件入库
 !sample/npu/demo_ai/**/*.a
 !sample/npu/demo_ai/**/*.pc
+# demo_ai NPU 模型权重:放行 .bin 入库
+!sample/npu/demo_ai/model/**/*.bin
 
 out/
 source/gmp/usr/dump_tools/vi_bayer_dump
