@@ -86,4 +86,9 @@ rootfs_post:
 	@install -m 755 $(SDK_DIR)/shimetad_GK7206 $(ROOTFS_PREFIX)/usr/bin/
 ifneq ($(filter y,$(CONFIG_XM7206V11A) $(CONFIG_XM7206V12A)),)
 	@$(MAKE) -C $(SDK_DIR)/source/app/factory_test install
+	@# ---- 根除 factory_server（避免它抢占 80 端口，留给 app_sample 用）----
+	@rm -f $(ROOTFS_PREFIX)/usr/bin/factory_server
+	@rm -f $(ROOTFS_PREFIX)/etc/init.d/S60factory_server
+	@find $(ROOTFS_PREFIX) -type d \( -name factory -o -name factory_test -o -name factory_server \) -prune -exec rm -rf {} +
+	@echo "[rootfs_post] factory_server purged"
 endif
