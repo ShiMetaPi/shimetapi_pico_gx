@@ -1,0 +1,12 @@
+#!/bin/sh
+[ "$1" = "start" ] || [ -z "$1" ] || exit 0
+[ -d /opt/ko ] || exit 0
+cd /opt/ko
+insmod xm_osal.ko mmz_allocator=xmedia mmz=anonymous,0,0x43000000,80M 2>/dev/null
+for m in xm_common xm_pm xm_vgs xm_tde xm_region xm_isp xm_vpss xm_npu \
+ xm_vi xm_chnl xm_vedu xm_rc xm_jpege xm_h265e xm_h264e xm_venc \
+         xm_vo xm_fb xm_cipher_drv xm_ive \
+ xm_acomm xm_aio xm_ao xm_ai xm_aenc xm_adec; do
+    [ -f "${m}.ko" ] && insmod "${m}.ko" 2>/dev/null
+done
+cd / >/dev/null
