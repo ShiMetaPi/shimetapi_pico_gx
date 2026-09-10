@@ -48,9 +48,10 @@ check_mem_info()
     temp=${var##*mem=}
     bootargs_mem=${temp%%M*}
 
-    if [ $os_mem_size -lt $bootargs_mem ]; then
-        echo "bootargs_mem: $bootargs_mem, os_mem_size: $os_mem_size"
-        echo "the mem in bootargs conflicts with the osmem in the load script, please check these two parameters."
+    # 旧版这里在 os_mem_size < bootargs_mem 时 exit 0——会导致 v11a_48M 脚本静默退出、
+    # ko 不加载。现已改成下方"双向对齐"自动处理，check_mem_info 只做 sanity check。
+    if [ -z "$bootargs_mem" ] || [ $bootargs_mem -ge $mem_total ]; then
+        echo "bootargs_mem invalid: $bootargs_mem (mem_total=$mem_total)"
         exit 0;
     fi
 }
@@ -233,6 +234,17 @@ calc_mmz_info;
 #######################Action###############################
 
 check_mem_info;
+
+# bootargs_mem 跟默认 os_mem_size 双向对齐，让 os_mem_size == bootargs_mem:
+# - bootargs < 默认 os（如 v12a_48M：48<96）→ 缩小 os 拉大 MMZ
+# - bootargs > 默认 os（如 v11a_48M：48>32）→ 拉大 os 缩小 MMZ（否则脚本会静默 exit）
+# - bootargs = 默认 os → 无变化（v11a_32M / v12a_96M）
+# 不动 bootargs_mem ≥ mem_total 的情况（check_mem_info 已拦截）。
+if [ -n "$bootargs_mem" ] && [ $bootargs_mem -ne $os_mem_size ]; then
+    echo "os_mem_size aligned: ${os_mem_size}M → ${bootargs_mem}M (bootargs)"
+    os_mem_size=$bootargs_mem
+    calc_mmz_info
+fi
 
 if [ $b_arg_remove -eq 1 ]; then
     remove_ko;
