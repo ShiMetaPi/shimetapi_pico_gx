@@ -1,0 +1,20 @@
+# xm7206v11a 板级寄存器表补丁 —— 上电点亮 LED
+#
+# 背景: v12a 的板级表(XM7206V12A_EVB_*.xlsm)会在上电时把 GPIO1_6 / GPIO5_6
+#       设为输出并拉高, 所以烧 v12a 固件上电灯就亮; 而 v11a 的表(XM7206V11A_EVB_*.xlsm)
+#       把这两个脚复用给了 I2C2_SDA / LCD_DATA9, 也没有任何 GPIO 写操作, 所以灯不亮。
+#
+# 代价: 启用本补丁后, v11a profile 上 pin58 不再是 I2C2_SDA、pin100 不再是 LCD_DATA9。
+#
+# 回退: 删除(或改名)本文件即可, 下次 build 的 .reg 就是 regbin 原始输出。
+#
+# 依据: 7206V11A&7206V11AT&7206V12A_PIN_OUT.xlsx 的
+#       「1.管脚信息表」「3.管脚控制寄存器」, 以及 xmorca.dtsi 的 gpio_chip1/gpio_chip5(arm,pl061)
+#
+# 地址        值        说明
+0x11980018  0x1000   # iocfg_reg29  pin58  PWM9      -> func0 = GPIO1_6   (原 0x1002 = func2 I2C2_SDA)
+0x100C0044  0x1000   # iocfg_reg61  pin100 LCD_DATA9 -> func0 = GPIO5_6   (原 0x1019 = func9 LCD_DATA9)
+0x120B1400  0x40     # gpio_chip1 + 0x400 = GPIODIR,  bit6 -> GPIO1_6 设为输出
+0x120B1100  0x40     # gpio_chip1 + 0x100 = GPIODATA(地址 bit[9:2] 作掩码 -> 仅 bit6), 写 1 -> 拉高
+0x120B5400  0x40     # gpio_chip5 + 0x400 = GPIODIR,  bit6 -> GPIO5_6 设为输出
+0x120B5100  0x40     # gpio_chip5 + 0x100 = GPIODATA(仅 bit6), 写 1 -> 拉高

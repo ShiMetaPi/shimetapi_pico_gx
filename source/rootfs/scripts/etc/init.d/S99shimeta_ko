@@ -1,12 +1,15 @@
 #!/bin/sh
+# 开机兜底加载媒体 ko（正常路径 S99init 已加载，这里应为 no-op）。
+# 禁止在此硬编码 mmz：曾硬编码 mmz=anonymous,0,0x43000000,80M(48M 布局)，
+# 与 32M 布局（S99init 走 /opt/ko/load 算出的 0x42000000/96M）冲突——xm_osal
+# 先到者胜，后到者 EEXIST 且被 2>/dev/null 吞掉，内存布局静默错乱。
 [ "$1" = "start" ] || [ -z "$1" ] || exit 0
-[ -d /opt/ko ] || exit 0
-cd /opt/ko
-insmod xm_osal.ko mmz_allocator=xmedia mmz=anonymous,0,0x43000000,80M 2>/dev/null
-for m in xm_common xm_pm xm_vgs xm_tde xm_region xm_isp xm_vpss xm_npu \
- xm_vi xm_chnl xm_vedu xm_rc xm_jpege xm_h265e xm_h264e xm_venc \
-         xm_vo xm_fb xm_cipher_drv xm_ive \
- xm_acomm xm_aio xm_ao xm_ai xm_aenc xm_adec; do
-    [ -f "${m}.ko" ] && insmod "${m}.ko" 2>/dev/null
-done
-cd / >/dev/null
+
+# S99init 已成功加载（xm_osal 在位）则直接退出，避免任何二次插入
+[ -d /sys/module/xm_osal ] && exit 0
+
+[ -x /opt/ko/load ] || exit 0
+CHIP_TYPE="$(cat /etc/chip_type 2>/dev/null)"
+[ -n "$CHIP_TYPE" ] || CHIP_TYPE=xm7206v11a
+
+/opt/ko/load "$CHIP_TYPE" -i >/dev/null 2>&1

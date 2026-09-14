@@ -1,0 +1,15 @@
+#!/bin/sh
+# sc465sl sensor 上电使能：GPIO5_6(全局编号 46)，pad mux 0x100C0044 -> func0 GPIO(0x1000)。
+# 历史：旧固件靠 factory_server 开机顺手调 enable_sensor() 上电；7c35125ea 移除
+# factory_server 后无人驱动该脚，sc465sl 在 i2c1 全部 NACK，sample_venc 报
+# I2C_WRITE error 风暴、sensor start 失败。本脚本与 factory_server.c
+# enable_sensor() 逐步等价，开机接管 sensor 上电职责。
+[ "$1" = "start" ] || [ -z "$1" ] || exit 0
+
+xmmm 0x100C0044 0x00001000
+
+if [ ! -e /sys/class/gpio/gpio46 ]; then
+    echo 46 > /sys/class/gpio/export
+fi
+echo out > /sys/class/gpio/gpio46/direction
+echo 1 > /sys/class/gpio/gpio46/value

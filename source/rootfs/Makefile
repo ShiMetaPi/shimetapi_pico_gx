@@ -73,7 +73,9 @@ rootfs_post:
 	@cp -f $(ROOTFS_OVERLAY_DIR)/etc/init.d/S40network   $(ROOTFS_PREFIX)/etc/init.d/S40network
 	@cp -f $(ROOTFS_OVERLAY_DIR)/etc/init.d/S50dropbear  $(ROOTFS_PREFIX)/etc/init.d/S50dropbear
 	@cp -f $(ROOTFS_OVERLAY_DIR)/etc/init.d/S80network   $(ROOTFS_PREFIX)/etc/init.d/S80network
+	@cp -f $(ROOTFS_OVERLAY_DIR)/etc/init.d/S98sensor_power $(ROOTFS_PREFIX)/etc/init.d/S98sensor_power
 	@cp -f $(ROOTFS_OVERLAY_DIR)/etc/init.d/S99init      $(ROOTFS_PREFIX)/etc/init.d/S99init
+	@cp -f $(ROOTFS_OVERLAY_DIR)/etc/init.d/S99shimeta_ko $(ROOTFS_PREFIX)/etc/init.d/S99shimeta_ko
 	@cp -f $(ROOTFS_OVERLAY_DIR)/opt/ko/load             $(ROOTFS_PREFIX)/opt/ko/load
 	@chmod 755 $(ROOTFS_PREFIX)/etc/init.d/* $(ROOTFS_PREFIX)/opt/ko/load
 	@# 写 chip_type 让 S99init 派生加载参数（v11a/v12a/v11at 都能正确加载 ko）

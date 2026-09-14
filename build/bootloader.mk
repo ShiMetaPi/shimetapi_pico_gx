@@ -71,5 +71,9 @@ FORCE:;
 $(BOOT_BUILDDIR)/.reg: $(SYSREG_DIR)/$(TARGET_XLSM) FORCE
 	$(AT)chmod 0755 $(TOOLS_DIR)/uboot_tools/regbin
 	$(AT)$(TOOLS_DIR)/uboot_tools/regbin $(SYSREG_DIR)/$(TARGET_XLSM) $(BOOT_BUILDDIR)/.reg;
+	$(AT)if [ -f $(TOOLS_DIR)/uboot_tools/reg_patch/$(CONFIG_XMEDIA_CHIP_TYPE).txt ]; then \
+		python3 $(TOOLS_DIR)/uboot_tools/patch_reg.py $(BOOT_BUILDDIR)/.reg \
+			$(TOOLS_DIR)/uboot_tools/reg_patch/$(CONFIG_XMEDIA_CHIP_TYPE).txt; \
+	fi;
 
 
