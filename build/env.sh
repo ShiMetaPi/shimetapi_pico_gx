@@ -35,11 +35,17 @@ function make()
 
 function setpaths()
 {
-    arm_gcc122_linux_path=${PWD}/tools/linux/toolchains/arm-gcc12.2.0-linux-gnueabi/bin
-    arm_gcc122_uclibc_linux_path=${PWD}/tools/linux/toolchains/arm-gcc12.2.0-linux-uclibceabi/bin
-    aarch64_gcc122_linux_path=${PWD}/tools/linux/toolchains/aarch64-gcc12.2.0-linux/bin
-    riscv_gcc102_linux_path=${PWD}/tools/linux/toolchains/riscv-gcc10.2.0-linux/bin
-    regbin_path=${PWD}/tools/utils/uboot_tools
+    # SDK 根目录以 env.sh 自身位置为准，不依赖调用方 PWD
+    # （旧版用 ${PWD}，从其它目录 source 本脚本时 PATH 指向不存在路径 → compiler not found）
+    local sdk_root
+    sdk_root="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")/.." && pwd)"
+    [ -n "${sdk_root}" ] || sdk_root="${PWD}"
+
+    arm_gcc122_linux_path=${sdk_root}/tools/linux/toolchains/arm-gcc12.2.0-linux-gnueabi/bin
+    arm_gcc122_uclibc_linux_path=${sdk_root}/tools/linux/toolchains/arm-gcc12.2.0-linux-uclibceabi/bin
+    aarch64_gcc122_linux_path=${sdk_root}/tools/linux/toolchains/aarch64-gcc12.2.0-linux/bin
+    riscv_gcc102_linux_path=${sdk_root}/tools/linux/toolchains/riscv-gcc10.2.0-linux/bin
+    regbin_path=${sdk_root}/tools/utils/uboot_tools
 
     PATH=${arm_gcc122_linux_path}:${PATH//${arm_gcc122_linux_path}:/}
     PATH=${arm_gcc122_uclibc_linux_path}:${PATH//${arm_gcc122_uclibc_linux_path}:/}

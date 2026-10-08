@@ -67,6 +67,20 @@ EOF
 # source environment
 source "${SDK_DIR}/build/env.sh"
 
+# 工具链兜底入 PATH（env.sh setpaths 以脚本自身定位，这里再校验一次）
+for _tc_bin in \
+    "${SDK_DIR}/tools/linux/toolchains/arm-gcc12.2.0-linux-uclibceabi/bin" \
+    "${SDK_DIR}/tools/linux/toolchains/riscv-gcc10.2.0-linux/bin" \
+    "${SDK_DIR}/tools/utils/uboot_tools"; do
+    [ -d "$_tc_bin" ] && export PATH="$_tc_bin:$PATH"
+done
+unset _tc_bin
+if ! command -v arm-gcc12.2.0-linux-uclibceabi-gcc >/dev/null 2>&1; then
+    echo "Error: ARM toolchain not found/usable under ${SDK_DIR}/tools/linux/toolchains/"
+    echo "       expect arm-gcc12.2.0-linux-uclibceabi/bin/*-gcc"
+    exit 1
+fi
+
 # Default: no parallel (single core)
 MAKE_J=""
 JOBS_DESC="single core"
@@ -259,11 +273,45 @@ case "$CMD" in
 
     all)
         echo "Building all components... ($JOBS_DESC)"
+        # 1) 全新构建：清空 out/
         make -C "${SDK_DIR}" clean
         sleep 1
+        # 2) 前置补建 sample 两库：rootfs_post 的 factory_test 链接
+        #    libsample_common.a / liblive_rtsp.a，而 sample 阶段排在 rootfs 之后，
+        #    全新 out/ 下不预建必挂（cannot find -lsample_common / -llive_rtsp）
+        echo "Pre-building sample deps (sample_common / live_rtsp) for factory_test..."
+        make -C "${SDK_DIR}/sample/common" ${MAKE_J}
+        make -C "${SDK_DIR}/sample/live_rtsp_server" ${MAKE_J}
+        # 3) 全量构建。sample 侧个别 app（如 demo_ai）失败不阻断：
+        #    镜像产物（bootargs/fs_image）排在 sample 之前，失败后兜底重跑一次 fs_image
+        set +e
         make -C "${SDK_DIR}" build ${MAKE_J}
-	source build/env.sh
-        make fs_image -j40
+        BUILD_RET=$?
+        set -e
+        echo "Building filesystem images... ($JOBS_DESC)"
+        make -C "${SDK_DIR}" fs_image ${MAKE_J}
+        # 4) 结果汇总
+        CHIP=$(grep '^CONFIG_XMEDIA_CHIP_TYPE=' "${SDK_DIR}/cfg.mk" 2>/dev/null | cut -d= -f2 || true)
+        if [ -f "${SDK_DIR}/out/${CHIP}/image/spi_image/bootargs.bin" ] \
+           && [ -f "${SDK_DIR}/out/${CHIP}/image/spi_image/rootfs.64k.jffs2" ]; then
+            echo ""
+            echo "========================================================"
+            echo "  Firmware ready: ${SDK_DIR}/out/${CHIP}/image/spi_image/"
+            echo "    bootargs.bin / kernel / rootfs.64k.jffs2 /"
+            echo "    rootfs.squashfs / spi_partitions.xml / uboot.bin"
+            if [ $BUILD_RET -ne 0 ]; then
+                echo "  NOTE: 'make build' returned ${BUILD_RET} (non-fatal sample failure), images are valid."
+            fi
+            echo "========================================================"
+        else
+            echo ""
+            echo "========================================================"
+            echo "  FAILED: firmware images not found under"
+            echo "    ${SDK_DIR}/out/${CHIP}/image/spi_image/"
+            echo "  (make build exit=${BUILD_RET}) — scroll up for the real error"
+            echo "========================================================"
+            exit 1
+        fi
         ;;
 
     clean)
